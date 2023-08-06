@@ -78,7 +78,7 @@
                     <div>
                         <input
                             class="tw-pl-[7px] tw-rounded-full tw-w-full tw-text-[14px]focus:tw-border-red-200 tw-border-violet-200 tw-outline tw-outline-slate-200"
-                            @input="debouncedHandleInput" placeholder="Tìm kiếm" />
+                             placeholder="Tìm kiếm" />
                     </div>
                 </div>
 
@@ -104,7 +104,7 @@
 
                                 </span>
                                 <span class="tw-shrink tw-text-right chapter-update">
-                                    {{ chapter.createdAt?.formatDate() }}
+                                    {{ chapter.createdAt }}
                                 </span>
                                 <span class="tw-min-w-[80px] tw-shrink-0 tw-text-right tw-chapter-views">
                                     {{ chapter.views }}
@@ -213,7 +213,6 @@
 <script>
 import axios from 'axios';
 import { useRoute } from 'vue-router';
-import { debounce } from 'lodash';
 
 
 export default {
@@ -350,9 +349,6 @@ export default {
         },
     },
     computed: {
-        debouncedHandleInput() {
-            return debounce(this.handleInput, 300); // Thời gian chờ 300ms (0.3 giây)
-        },
         genre() {
             return this.data?.genre?.split(";");
         },
