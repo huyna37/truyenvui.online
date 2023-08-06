@@ -1,3 +1,62 @@
+<script setup lang="ts">
+let mangas1 = Array;
+let mangas2 = Array;
+let mangas3 = Array;
+let mangas4 = Array;
+let chapterNewest = Array;
+let isMaxList = false;
+async function getMangas1() {
+    let query = {
+        page: 1,
+        limit: 5,
+        sortField: 'views',
+        sortOrder: 'desc',
+        filterOptions: JSON.stringify({ "genre": { "$regex": "\\bharem\\b", "$options": "i" } })
+    }
+    const { data } = await customFetch<any>(`/manga/`, {
+        params: query
+    });
+    mangas1 = data.value.result.data;
+}
+async function getMangas2() {
+    mangas2 = (await customFetch('/manga/?page=1&limit=12&filterOptions={"genre": { $regex: "\\baction\\b", $options: "i"}&sortField=views&sortOrder=desc')).data.result.data;
+}
+async function getMangas3() {
+    mangas3 = (await customFetch('/manga/?page=1&limit=12&sortField=name&filterOptions={"genre": { $regex: "\\bharem\\b", $options: "i"}&sortOrder=desc')).data.result.data;
+}
+async function getMangas4() {
+    // Chuẩn bị truy vấn tìm kiếm
+    const query = {
+        page: 1,
+        limit: 12,
+        sortField: "views",
+        sortOrder: "desc",
+        filterOptions: JSON.stringify({ "genre": { "$regex": "\\becchi\\b", "$options": "i" } })
+    };
+    const {data} = await customFetch<any>('/manga/?' + new URLSearchParams(query));
+
+    mangas4 = data.value.result.data;
+}
+async function getImageById(id: any, typeImg: any) {
+    return (await customFetch(`/manga/${id}/${typeImg}`))
+}
+function scrollListMovie(reduce: any) {
+    let container = document.getElementById('movie-list');
+    if(!container) return;
+    if (!reduce) {
+        container.scrollLeft += 200; // Cuộn 200px bên phải
+        isMaxList = container.scrollLeft >= (container.scrollWidth - container.clientWidth) - 300;
+    } else {
+        container.scrollLeft = 0; // Cuộn về đầu danh sách
+        isMaxList = false;
+    }
+}
+
+async function getChapterNewest() {
+    chapterNewest = (await customFetch(`/chapter/newest/?page=1&index=12`)).data.result;
+}
+</script>
+
 <template>
     <div class='tw-mt-[1rem]'>
         <section class="row">
@@ -176,97 +235,6 @@
 
     </div>
 </template>
-
-<script>
-import axios from 'axios'
-import store from '@/store/store';
-export default {
-    name: "home-main",
-    data() {
-        return {
-            mangas1: [],
-            mangas2: [],
-            mangas3: [],
-            mangas4: [],
-            isMaxList: false,
-            scrollContainerStyle: {
-                scrollBehavior: "smooth",
-                overflowX: "scroll",
-            },
-            isLoading: false,
-            chapterNewest: []
-        }
-    },
-  
-    async created() {
-        await Promise.all([this.getMangas1(), this.getMangas2(), this.getMangas3(), this.getMangas4(), this.getChapterNewest()])
-        this.isLoading = true;
-    },
-    methods: {
-        async getMangas1() {
-            let query = {
-                page: 1,
-                limit: 5,
-                sortField: 'views',
-                sortOrder: 'desc',
-                filterOptions: JSON.stringify({ "genre": { "$regex": "\\bharem\\b", "$options": "i" } })
-            }
-            const response = await axios.get(`https://api.truyenvui.online/manga/`, {
-                params: query
-            });
-            this.mangas1 = response.data.result.data;
-        },
-        async getMangas2() {
-            this.mangas2 = (await axios.get('https://api.truyenvui.online/manga/?page=1&limit=12&filterOptions={"genre": { $regex: "\\baction\\b", $options: "i"}&sortField=views&sortOrder=desc')).data.result.data;
-        },
-        async getMangas3() {
-            this.mangas3 = (await axios.get('https://api.truyenvui.online/manga/?page=1&limit=12&sortField=name&filterOptions={"genre": { $regex: "\\bharem\\b", $options: "i"}&sortOrder=desc')).data.result.data;
-        },
-        async getMangas4() {
-            // Chuẩn bị truy vấn tìm kiếm
-            const query = {
-                page: 1,
-                limit: 12,
-                sortField: "views",
-                sortOrder: "desc",
-                filterOptions: JSON.stringify({ "genre": { "$regex": "\\becchi\\b", "$options": "i" } })
-            };
-            const url = 'https://api.truyenvui.online/manga/?' + new URLSearchParams(query);
-            this.mangas4 = (await axios.get(url)).data.result.data;
-        },
-        async getImageById(id, typeImg) {
-            return (await axios.get(`https://api.truyenvui.online/manga/${id}/${typeImg}`))
-        },
-        scrollListMovie(reduce) {
-            let container = document.getElementById('movie-list');
-            if (!reduce) {
-                container.scrollLeft += 200; // Cuộn 200px bên phải
-                this.isMaxList = container.scrollLeft >= (container.scrollWidth - container.clientWidth) - 300;
-            } else {
-                container.scrollLeft = 0; // Cuộn về đầu danh sách
-                this.isMaxList = false;
-            }
-        },
-        async getChapterNewest() {
-            this.chapterNewest = (await axios.get(`https://api.truyenvui.online/chapter/newest/?page=1&index=12`)).data.result;
-        }
-    },
-    computed: {
-        mangaSpecial() {
-            // Filter the mangas1 array and return the first element where value === 0
-            return this.mangas1[0];
-        },
-        manga1expect() {
-            if (!this.mangas1) return [];
-
-            // Filter the mangas1 array and return elements where value is not equal to 0
-            return this.mangas1.slice(1);
-        },
-
-    }
-
-}
-</script>
 
 <style>
 #movie-list::-webkit-scrollbar {
