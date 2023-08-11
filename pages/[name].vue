@@ -1,3 +1,23 @@
+<script setup lang="ts">
+const route = useRoute();
+const { name } = route.params;
+let data : any;
+let newestPage : any;
+const listChapter = Array();
+const currentPage = 1;
+const isLoadingMore = false;
+const inputSearch = '';
+const listmanga = Array();
+const listMangaTop = Array();
+const isMaxList = Boolean;
+const scrollContainerStyle = {
+    scrollBehavior: "smooth",
+    overflowX: "scroll",
+};
+const filterBy = '';
+
+
+</script>
 <template>
     <div class='container tw-mt-[1rem]' v-if="data">
         <section class="row">
@@ -78,7 +98,7 @@
                     <div>
                         <input
                             class="tw-pl-[7px] tw-rounded-full tw-w-full tw-text-[14px]focus:tw-border-red-200 tw-border-violet-200 tw-outline tw-outline-slate-200"
-                             placeholder="Tìm kiếm" />
+                            placeholder="Tìm kiếm" />
                     </div>
                 </div>
 
@@ -210,157 +230,8 @@
     </div>
 </template>
 
-<script>
-import axios from 'axios';
-import { useRoute } from 'vue-router';
-
-
-export default {
-    name: "detail-main",
-    setup() {
-        const route = useRoute();
-        const name = route.params.name;
-
-        return {
-            route,
-            name
-        };
-    },
-    data() {
-        return {
-            data: {},
-            listChapter: [],
-            currentPage: 1,
-            isLoadingMore: false,
-            inputSearch: '',
-            listmanga: [],
-            listMangaTop: [],
-            isMaxList: false,
-            scrollContainerStyle: {
-                scrollBehavior: "smooth",
-                overflowX: "scroll",
-            },
-            filterBy: ''
-        }
-    },
-    async created() {
-        await Promise.all([this.getDetail(), this.getListMangas(), this.getListMangasTop()]);
-        this.listChapter = (await this.getListChapter())?.data;
-    },
-    async beforeRouteUpdate(to, from, next) {
-        if (to.hash.startsWith('#')) {
-            next();
-            return;
-        }
-        this.name = to.params.name;
-        // Thực hiện các tác vụ tải lại component hoặc khởi tạo lại dữ liệu
-        await Promise.all([this.getDetail(), this.getListMangas(), this.getListMangasTop()])
-        this.listChapter = (await this.getListChapter())?.data;
-        // Tiếp tục điều hướng
-        next();
-    },
-    methods: {
-        scrollListMovie(reduce) {
-            let container = document.getElementById('list-dont');
-            if (!reduce) {
-                container.scrollLeft += 200; // Cuộn 200px bên phải
-                this.isMaxList = container.scrollLeft >= (container.scrollWidth - container.clientWidth) - 300;
-            } else {
-                container.scrollLeft = 0; // Cuộn về đầu danh sách
-                this.isMaxList = false;
-            }
-        },
-        async getListMangas() {
-            try {
-                let query = {
-                    page: 1,
-                    limit: 15,
-                    sortField: 'createdAt',
-                    sortOrder: 'desc',
-                    filterOptions: JSON.stringify({
-                        "genre": { "$regex": "\\bcomedy\\b", "$options": "i" }
-                    })
-                }
-                const response = await axios.get(`https://api.truyenvui.online/manga/`, {
-                    params: query
-                });
-                this.listmanga = response.data.result.data;
-            } catch (error) {
-                // Xử lý lỗi ở đây nếu cần thiết
-                console.error('Error in getListMangas:', error);
-            }
-        },
-        async getListMangasTop() {
-            try {
-                let query = {
-                    page: 1,
-                    limit: 5,
-                    sortField: 'views',
-                    sortOrder: 'asc',
-                    filterOptions: JSON.stringify({
-                        "genre": { "$regex": "\\bYuri\\b", "$options": "i" }
-                    })
-                }
-                const response = await axios.get(`/manga/`, {
-                    params: query
-                });
-                this.listMangaTop = response.data.result.data;
-            } catch (error) {
-                // Xử lý lỗi ở đây nếu cần thiết
-                console.error('Error in getListMangasTop:', error);
-            }
-        },
-        async getDetail() {
-            let url = 'https://api.truyenvui.online/manga/' + this.name;
-            const result = await useAsyncData(
-                'data',
-                () => $fetch(url)
-            )
-            this.data = result.data._value.result;
-            useHead({
-                title: `${this.data.name} - NetTruyenVui`,
-                meta: [
-                    { name: 'description', content: `${this.data.title} - NetTruyenVui` },
-                    {name: 'og:title', content: `${this.data.name} - NetTruyenVui`},
-                    {name: 'og:description', content: `${this.data.title} - NetTruyenVui`},
-                    {name: 'og:description', content: `${this.data.title} - NetTruyenVui`},
-                    {name: 'og:image', content: this.data.coverImage},
-                ],
-            })
-        },
-        async getListChapter() {
-            let url = `https://api.truyenvui.online/chapter/?page=${this.currentPage}&index=10&sortField=number&sortOrder=desc&filterOptions={"manga":"${this.data._id}"}`;
-            if (this.filterBy) {
-                url = `https://api.truyenvui.online/chapter/?page=${this.currentPage}&index=10&sortField=number&sortOrder=desc&filterOptions={"manga":"${this.data._id}"}&filter={"title": "${this.filterBy}"}`;
-            }
-            return (await axios.get(url)).data.result;
-        },
-        async loadMore() {
-            this.isLoadingMore = true;
-            this.currentPage += 1;
-            const more = await this.getListChapter();
-            this.listChapter = [...this.listChapter, ...more.data];
-            this.isLoadingMore = false;
-        },
-        async handleInput(event) {
-            this.filterBy = event.target.value;
-            this.currentPage = 1;
-            this.listChapter = (await this.getListChapter()).data;
-        },
-    },
-    computed: {
-        genre() {
-            return this.data?.genre?.split(";");
-        },
-        newestPage() {
-            return this.listChapter[0];
-        }
-    }
-}
-
-
-</script>
-
-<style>.list-dont::-webkit-scrollbar {
+<style>
+.list-dont::-webkit-scrollbar {
     width: 1px;
-}</style>
+}
+</style>
