@@ -1,10 +1,28 @@
 <script setup lang="ts">
-let mangas1 = Array;
-let mangas2 = Array;
-let mangas3 = Array;
-let mangas4 = Array;
-let chapterNewest = Array;
+import { useAsyncData, useNuxtApp } from 'nuxt/app';
+import { useMainStore } from '@/store'
+let mangas1: any;;
+let mangas2: any;;
+let mangas3: any;;
+let mangas4: any;;
+let chapterNewest: any;
+let mangaSpecial = computed(() => {
+    if (mangas1) {
+        return mangas1[0];
+    }
+    return null;
+})
 let isMaxList = false;
+let manga1expect = computed(() => {
+    if (!mangas1) return [];
+
+// Filter the mangas1 array and return elements where value is not equal to 0
+return mangas1.slice(1);
+});
+let scrollContainerStyle = {
+    scrollBehavior: "smooth",
+    overflowX: "scroll",
+};
 async function getMangas1() {
     let query = {
         page: 1,
@@ -19,10 +37,12 @@ async function getMangas1() {
     mangas1 = data.value.result.data;
 }
 async function getMangas2() {
-    mangas2 = (await customFetch('/manga/?page=1&limit=12&filterOptions={"genre": { $regex: "\\baction\\b", $options: "i"}&sortField=views&sortOrder=desc')).data.result.data;
+    const { data } = (await customFetch<any>('/manga/?page=1&limit=12&filterOptions={"genre": { $regex: "\\baction\\b", $options: "i"}&sortField=views&sortOrder=desc'));
+    mangas2 = data.value.result.data;
 }
 async function getMangas3() {
-    mangas3 = (await customFetch('/manga/?page=1&limit=12&sortField=name&filterOptions={"genre": { $regex: "\\bharem\\b", $options: "i"}&sortOrder=desc')).data.result.data;
+    const { data } = (await customFetch<any>('/manga/?page=1&limit=12&sortField=name&filterOptions={"genre": { $regex: "\\bharem\\b", $options: "i"}&sortOrder=desc'));
+    mangas3 = data.value.result.data;
 }
 async function getMangas4() {
     // Chuẩn bị truy vấn tìm kiếm
@@ -33,16 +53,14 @@ async function getMangas4() {
         sortOrder: "desc",
         filterOptions: JSON.stringify({ "genre": { "$regex": "\\becchi\\b", "$options": "i" } })
     };
-    const {data} = await customFetch<any>('/manga/?' + new URLSearchParams(query));
+    const { data } = await customFetch<any>('/manga/?' + new URLSearchParams(query));
 
     mangas4 = data.value.result.data;
 }
-async function getImageById(id: any, typeImg: any) {
-    return (await customFetch(`/manga/${id}/${typeImg}`))
-}
-function scrollListMovie(reduce: any) {
+
+function scrollListMovie(reduce?: any) {
     let container = document.getElementById('movie-list');
-    if(!container) return;
+    if (!container) return;
     if (!reduce) {
         container.scrollLeft += 200; // Cuộn 200px bên phải
         isMaxList = container.scrollLeft >= (container.scrollWidth - container.clientWidth) - 300;
@@ -53,8 +71,17 @@ function scrollListMovie(reduce: any) {
 }
 
 async function getChapterNewest() {
-    chapterNewest = (await customFetch(`/chapter/newest/?page=1&index=12`)).data.result;
+    const { data } = await customFetch<any>(`/chapter/newest/?page=1&index=12`);
+    chapterNewest = data.value.result;
 }
+const app = useNuxtApp();
+const mainStore = useMainStore();
+const { setLoading } = mainStore;
+
+setLoading(true);
+await Promise.all([getMangas1(), getMangas2(), getMangas3(), getMangas4(), getChapterNewest()]);
+console.log(chapterNewest)
+
 </script>
 
 <template>
@@ -99,9 +126,6 @@ async function getChapterNewest() {
                                 <div class="tw-h-full tw-relative">
                                     <img class="tw-w-full tw-h-full tw-rounded-xl" :src="`${data2.showImage}`"
                                         data-id="100305" :alt="data2.name">
-                                    <!-- <img class="tw-w-full tw-h-full tw-rounded-xl"
-                                    :src="`https://crawler.meoden.online/manga/${data2._id}/showImage`" data-id="100305"
-                                    :alt="data2.name"> -->
                                     <div
                                         class="tw-absolute tw-rounded-xl tw-left-0 tw-right-0 tw-bottom-0 tw-px-[10px] max-md:tw-pt-[5px] tw-pt-[80px] tw-pb-[5px] tw-bg-gradient-to-b tw-from-transparent tw-to-black tw-text-white tw-dark:text-teal-500">
                                         <span class="tw-font-extralight tw-text-[12px] tw-dark:text-teal-300">{{ data2.views
@@ -148,9 +172,6 @@ async function getChapterNewest() {
                 class='col-lg-2 col-md-3 col-4 max-lg:tw-mb-[1rem] hover:overscroll-contain hover:tw-shadow-2xl scroll-none-custom'>
                 <img class="tw-h-[auto] tw-w-full tw-rounded-xl max-md:tw-h-[14rem] md:tw-h-[18rem]"
                     :src="`${chapterNew.manga.coverImage}`" :alt="chapterNew.manga.name">
-                <!-- <img class="tw-h-[auto] tw-w-full tw-rounded-xl max-md:tw-h-[14rem] md:tw-h-[18rem]"
-                    :src="`https://crawler.meoden.online/manga/${chapterNew.manga._id}/coverImage`"
-                    :alt="chapterNew.manga.name"> -->
                 <p class='tw-text-slate-800 tw-h-[42px] tw-overflow-hidden tw-text-center tw-mt-1 tw-text-[13px]'>
                     <b>{{ chapterNew.manga.name }}</b> - <b>{{ chapterNew.title }}</b>
                 </p>
@@ -170,8 +191,6 @@ async function getChapterNewest() {
                         <NuxtLink :to="data4.slug">
                             <div class="tw-overflow-hidden tw-w-full tw-rounded-xl">
                                 <img class="tw-w-full tw-h-full" :src="`${data4.showImage}`" :alt="data4.name">
-                                <!-- <img class="tw-w-full tw-h-full"
-                                    :src="`https://crawler.meoden.online/manga/${data4._id}/showImage`" :alt="data4.name"> -->
                                 <span
                                     class="tw-absolute tw-top-[10px] tw-left-[10px] tw-rounded-lg tw-px-2 tw-bg-violet-900/80 dark:tw-bg-teal-900/80 tw-text-white tw-text-[12px] tw-font-light">{{
                                         data4.views }}
@@ -206,8 +225,6 @@ async function getChapterNewest() {
                 class='col-lg-2 col-md-3 col-4 max-lg:tw-mb-[1rem] hover:overscroll-contain hover:tw-shadow-2xl scroll-none-custom'>
                 <img class="tw-h-[auto] tw-w-full tw-rounded-xl max-md:tw-h-[14rem] md:tw-h-[18rem]"
                     :src="`${data3.coverImage}`" :alt="data3.name">
-                <!-- <img class="tw-h-[auto] tw-w-full tw-rounded-xl max-md:tw-h-[14rem] md:tw-h-[18rem]"
-                    :src="`https://crawler.meoden.online/manga/${data3._id}/coverImage`" :alt="data3.name"> -->
                 <p class='tw-text-slate-800 tw-h-[42px] tw-overflow-hidden tw-text-center tw-mt-1 tw-text-[13px]'>
                     {{ data3.name }}
                 </p>
@@ -223,8 +240,6 @@ async function getChapterNewest() {
                     class='col-lg-2 col-md-3 col-4 max-lg:tw-mb-[1rem] hover:overscroll-contain hover:tw-shadow-2xl'>
                     <img class="tw-h-[auto] tw-w-full tw-rounded-xl max-md:tw-h-[14rem] md:tw-h-[18rem]"
                         :src="`${data5.coverImage}`" :alt="data5.name">
-                    <!-- <img class="tw-h-[auto] tw-w-full tw-rounded-xl max-md:tw-h-[14rem] md:tw-h-[18rem]"
-                        :src="`https://crawler.meoden.online/manga/${data5._id}/coverImage`" :alt="data5.name"> -->
                     <p class='tw-text-slate-800 tw-h-[42px] tw-overflow-hidden tw-text-center tw-mt-1 tw-text-[13px]'>
                         {{ data5.name }}
                     </p>
@@ -240,4 +255,4 @@ async function getChapterNewest() {
 #movie-list::-webkit-scrollbar {
     width: 1px;
 }
-</style>
+</style>store

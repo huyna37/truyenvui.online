@@ -1,15 +1,15 @@
 <template>
+  <div v-show="isLoading">
+        Loading...
+    </div>
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
 </template>
 
 <script setup lang="ts">
-// Use the useHead function to set the document head
-useHead({
-  title: 'My App',
-  meta: [
-    { name: 'description', content: 'My amazing site.' }
-  ],
-});
+import { useMainStore } from '@/store';
+const mainStore = useMainStore();
+const { isLoading } = mainStore;
+
 </script>

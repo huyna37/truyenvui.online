@@ -15,8 +15,10 @@
     "nuxt": "^3.6.5"
   },
   "dependencies": {
+    "@pinia/nuxt": "^0.4.11",
     "axios": "^1.4.0",
     "lodash": "^4.17.21",
+    "pinia": "^2.1.6",
     "vuex": "^4.1.0"
   }
 }

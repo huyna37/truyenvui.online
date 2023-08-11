@@ -1,44 +1,148 @@
 <script setup lang="ts">
+import { useMainStore } from '@/store';
+import { debounce } from 'lodash';
+
 const route = useRoute();
 const { name } = route.params;
-let data : any;
-let newestPage : any;
-const listChapter = Array();
-const currentPage = 1;
-const isLoadingMore = false;
-const inputSearch = '';
-const listmanga = Array();
-const listMangaTop = Array();
-const isMaxList = Boolean;
-const scrollContainerStyle = {
+let dataDetail: any;
+let listChapter = ref([]);
+let currentPage = 1;
+let isLoadingMore = false;
+let inputSearch = '';
+let listmanga = Array();
+let listMangaTop = Array();
+let isMaxList: Boolean;
+let scrollContainerStyle = {
     scrollBehavior: "smooth",
     overflowX: "scroll",
 };
-const filterBy = '';
+let filterBy = '';
 
 
+async function scrollListMovie(reduce: boolean) {
+    let container = document.getElementById('list-dont') as HTMLElement;
+    if (!reduce) {
+        container.scrollLeft += 200; // Cuộn 200px bên phải
+        isMaxList = container.scrollLeft >= (container.scrollWidth - container.clientWidth) - 300;
+    } else {
+        container.scrollLeft = 0; // Cuộn về đầu danh sách
+        isMaxList = false;
+    }
+}
+
+async function getListMangas() {
+    try {
+        let query = {
+            page: 1,
+            limit: 15,
+            sortField: 'createdAt',
+            sortOrder: 'desc',
+            filterOptions: JSON.stringify({
+                "genre": { "$regex": "\\bcomedy\\b", "$options": "i" }
+            })
+        };
+        const { data } = await customFetch<any>(`/manga/`, {
+            params: query
+        });
+        listmanga = data.value.result.data;
+    } catch (error) {
+        // Xử lý lỗi ở đây nếu cần thiết
+        console.error('Error in getListMangas:', error);
+    }
+}
+
+async function getListMangasTop() {
+    try {
+        let query = {
+            page: 1,
+            limit: 5,
+            sortField: 'views',
+            sortOrder: 'asc',
+            filterOptions: JSON.stringify({
+                "genre": { "$regex": "\\bYuri\\b", "$options": "i" }
+            })
+        };
+        const { data } = await customFetch<any>(`/manga/`, {
+            params: query
+        });
+        listMangaTop = data.value.result.data;
+    } catch (error) {
+        // Xử lý lỗi ở đây nếu cần thiết
+        console.error('Error in getListMangasTop:', error);
+    }
+}
+
+async function getDetail() {
+    const { data } = (await customFetch<any>('/manga/' + name));
+    dataDetail = data.value.result;
+}
+
+async function getListChapter() {
+    let urlValue = `/chapter/?page=${currentPage}&index=10&sortField=number&sortOrder=desc&filterOptions={"manga":"${dataDetail._id}"}`;
+    if (filterBy) {
+        urlValue = `/chapter/?page=${currentPage}&index=10&sortField=number&sortOrder=desc&filterOptions={"manga":"${dataDetail._id}"}&filter={"title": "${filterBy}"}`;
+    }
+    const { data } = await customFetch<any>(urlValue);
+    return data.value.result;
+}
+
+async function loadMore() {
+    isLoadingMore = true;
+    currentPage += 1;
+    const more = await getListChapter();
+    listChapter = [...listChapter, ...more.data];
+    isLoadingMore = false;
+}
+
+async function handleInput(event: any) {
+    filterBy = event.target.value;
+    currentPage = 1;
+    listChapter = (await getListChapter()).data;
+}
+let debouncedHandleInput = computed(()=> {
+    return debounce(handleInput, 300);
+})
+
+let genre = dataDetail?.genre?.split(";")
+
+let newestPage = computed(()=>{
+    return listChapter[0];
+})
+
+const mainStore = useMainStore();
+const { setLoading } = mainStore;
+setLoading(true);
+await Promise.all([getDetail(), getListMangas(), getListMangasTop()]);
+useHead({
+    title: `${dataDetail.name} - NetTruyenVui`,
+    meta: [
+        { name: 'description', content: dataDetail.description }
+    ],
+});
+listChapter = (await getListChapter())?.data;
+setLoading(false);
 </script>
 <template>
-    <div class='container tw-mt-[1rem]' v-if="data">
+    <div class='container tw-mt-[1rem]' v-if="dataDetail">
         <section class="row">
             <div class='col-md-8'>
                 <div class="col-md-12 row">
-                    <div class='col-md-4 col-sm-12' :class="{ 'max-md:tw-hidden': data.showImage }">
-                        <img v-if="data._id" :src="`${data.coverImage}`" class="tw-rounded-xl tw-w-[100%]" />
+                    <div class='col-md-4 col-sm-12' :class="{ 'max-md:tw-hidden': dataDetail.showImage }">
+                        <img v-if="dataDetail._id" :src="`${dataDetail.coverImage}`" class="tw-rounded-xl tw-w-[100%]" />
                     </div>
                     <div class='col-md-4 col-sm-12 tw-hidden max-md:tw-block'>
-                        <img v-if="data._id" :src="`${data.showImage}`" class="tw-rounded-xl tw-w-[100%]" />
+                        <img v-if="dataDetail._id" :src="`${dataDetail.showImage}`" class="tw-rounded-xl tw-w-[100%]" />
                     </div>
                     <div class='col-md-8'>
-                        <h4 class='tw-uppercase tw-text-[20px] tw-font-medium'>{{ data.name }}</h4>
-                        <h5 class='tw-my-3 tw-font-medium'>{{ data.title }}</h5>
+                        <h4 class='tw-uppercase tw-text-[20px] tw-font-medium'>{{ dataDetail.name }}</h4>
+                        <h5 class='tw-my-3 tw-font-medium'>{{ dataDetail.title }}</h5>
                         <div class="tw-mb-2 tw-text-[14px]">
                             <label class="tw-w-[100px] tw-inline-block">Tác giả</label>
-                            <span>{{ data.author }}</span>
+                            <span>{{ dataDetail.author }}</span>
                         </div>
                         <div class="tw-mb-2 tw-text-[14px]">
                             <label class="tw-w-[100px] tw-inline-block">Tình trạng</label>
-                            <span>{{ data.views ? 'Done' : 'In Progress' }}</span>
+                            <span>{{ dataDetail.views ? 'Done' : 'In Progress' }}</span>
                         </div>
                         <div class="tw-mb-2 tw-text-[14px]">
                             <label class="tw-w-[100px] tw-inline-block">Mới nhất</label>
@@ -49,7 +153,7 @@ const filterBy = '';
                         </div>
                         <div class="mb-4 text-[14px]">
                             <label class="tw-w-[100px] tw-inline-block">Lượt đọc</label>
-                            <span>{{ data.views }}</span>
+                            <span>{{ dataDetail.views }}</span>
                         </div>
                         <div>
                             <button
@@ -70,15 +174,15 @@ const filterBy = '';
                 <h5 class="tw-mt-[10px] tw-uppercase tw-text-orange-600">Nội dung</h5>
 
                 <p class="tw-mt-[10px] tw-text-[15px] tw-font-light">
-                    {{ data.description }}
+                    {{ dataDetail.description }}
                 </p>
 
                 <div class="tw-mt-[10px] tw-text-[15px] tw-font-light tw-overflow-auto tw-min-h-[35px]">
-                    <template v-if="data.genre">
-                        <NuxtLink v-for="genre in genre" v-bind:key="genre"
+                    <template v-if="genre">
+                        <NuxtLink v-for="gen in genre" v-bind:key="gen"
                             class="tw-bg-violet-200 dark:tw-bg-slate-700 tw-rounded-lg tw-px-2 tw-mr-1 tw-py-1"
-                            :to="'/the-loai/' + genre">{{
-                                genre }}</NuxtLink>
+                            :to="'/the-loai/' + gen">{{
+                                gen }}</NuxtLink>
                     </template>
                     <template v-else>
                         <a class="tw-bg-violet-200 dark:tw-bg-slate-700 tw-rounded-lg tw-px-2 tw-mr-1 tw-py-1"
@@ -97,6 +201,7 @@ const filterBy = '';
                     <span class="tw-uppercase tw-text-orange-600 ">Danh sách chap</span>
                     <div>
                         <input
+                        @input="debouncedHandleInput"
                             class="tw-pl-[7px] tw-rounded-full tw-w-full tw-text-[14px]focus:tw-border-red-200 tw-border-violet-200 tw-outline tw-outline-slate-200"
                             placeholder="Tìm kiếm" />
                     </div>
@@ -155,9 +260,9 @@ const filterBy = '';
                     <div class="tw-mt-[20px] tw-text-[14px] tw-font-extralight tw-manga-tag">
                         Từ khoá:
                         <NuxtLink class="tw-bg-gray-300 dark:tw-bg-slate-700 tw-rounded-lg tw-px-2 tw-mr-1"
-                            :to="'/' + data.slug">{{ data.name }}</NuxtLink>
+                            :to="'/' + dataDetail.slug">{{ dataDetail.name }}</NuxtLink>
                         <NuxtLink class="tw-bg-gray-300 dark:tw-bg-slate-700 tw-rounded-lg tw-px-2 tw-mr-1"
-                            :to="'/' + data.slug" v-if="data.author">{{ data.author }}</NuxtLink>
+                            :to="'/' + dataDetail.slug" v-if="dataDetail.author">{{ dataDetail.author }}</NuxtLink>
                     </div>
                 </div>
             </div>
