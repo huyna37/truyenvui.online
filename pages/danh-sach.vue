@@ -46,7 +46,7 @@ async function updatePaginate(event: any) {
 }
 async function getMangas() {
     try {
-        let query = {
+        let query : any = {
             page: pageIndex,
             limit: limit,
             sortField: 'createdAt',

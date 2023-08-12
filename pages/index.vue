@@ -79,7 +79,6 @@ const { setLoading } = mainStore;
 
 setLoading(true);
 await Promise.all([getMangas1(), getMangas2(), getMangas3(), getMangas4(), getChapterNewest()]);
-console.log(chapterNewest)
 setLoading(false);
 </script>
 
