@@ -12,9 +12,6 @@ let listmanga = ref<any>([]);
 let chapterInfo = ref<any>({});
 
 const mainStore = useMainStore();
-const { setLoading } = mainStore;
-
-
 
 async function getListMangas() {
     const { data } = (await customFetch<any>('/manga/?page=1&limit=6&sortField=createdAt&sortOrder=desc'));
@@ -84,7 +81,7 @@ const newestPage = computed(() => {
     return listChapter[0];
 })
 
-setLoading(true);
+mainStore.setLoading(true);
 await getManga();
 await getChapterInfo();
 await getContentByName();
@@ -93,7 +90,7 @@ if (dataDetail.length > 0) {
 }
 await Promise.all([getNewstChapter(), getListMangas()]);
 getCurrentChapter();
-setLoading(false);
+mainStore.setLoading(false);
 useHead({
     title: `${manga.name} - ${chapterInfo.title}`,
     meta: [
@@ -119,7 +116,7 @@ useHead({
         <section class="tw-pl-0 tw-mb-[1rem] tw-px-[10px] d-flex align-items-center" v-if="manga">
             <i class="fa-solid fa-house tw-mr-2 "></i>
             <span class="tw-mr-1 tw-font-bold">/</span>
-            <NuxtLink :to="'/' + manga?.slug ?? ''" class="tw-mr-1 tw-font-bold">{{ manga.name }}</NuxtLink>
+            <NuxtLink :to="'/' + manga?.slug ?? ''" class="tw-mr-1 tw-font-bold">{{ manga.name.substring(0, 20) }}</NuxtLink>
             <span class="tw-font-bold tw-mr-1">/</span>
             <div class="tw-font-bold">
                 {{ chapter }}

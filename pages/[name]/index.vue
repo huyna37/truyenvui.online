@@ -110,8 +110,7 @@ let newestPage = computed(() => {
 
 const mainStore = useMainStore();
 
-const { setLoading } = mainStore;
-setLoading(true);
+mainStore.setLoading(true);
 await Promise.all([getDetail(), getListMangas(), getListMangasTop()]);
 useHead({
     title: `${dataDetail.name} - NetTruyenVui`,
@@ -170,7 +169,7 @@ useHead({
     ],
 });
 listChapter.value = (await getListChapter())?.data;
-setLoading(false);
+mainStore.setLoading(false);
 
 </script>
 <template>

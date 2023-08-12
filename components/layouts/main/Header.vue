@@ -7,7 +7,7 @@
       <button class="navbar-toggler" type="button" @click="toggleNav()" aria-controls="navbarSupportedContent">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" :class="{ 'tw-block': isNavOpen }" id="navbarSupportedContent">
+      <div class="collapse navbar-collapse" :class="{ 'tw-block': mainStore.isNavOpen }" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <NuxtLink class="nav-link" to="/danh-sach">Danh Sách</NuxtLink>
@@ -179,19 +179,17 @@ import { useMainStore } from '@/store';
 
 const router = useRouter();
 const mainStore = useMainStore();
-const { isNavOpen, currentPath, setNavOpen } = mainStore;
 
 let input = '';
 let isActiveCategory = computed(() => {
-  if (!currentPath) return false;
-  return currentPath.startsWith("/the-loai");
+  if (!mainStore.currentPath) return false;
+  return mainStore.currentPath.startsWith("/the-loai");
 })
 function search() {
   router.push(`/danh-sach?name=${input}`)
 };
 function toggleNav() {
-  setNavOpen(true);
-  console.log(isNavOpen)
+  mainStore.setNavOpen(!mainStore.isNavOpen);
 }
 </script>
   

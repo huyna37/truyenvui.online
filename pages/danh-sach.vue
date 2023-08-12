@@ -32,7 +32,6 @@
 import { useMainStore } from '@/store'
 import Paginate from '@/components/shared/paginated.vue'
 const mainStore = useMainStore();
-const { setLoading } = mainStore;
 const resultPage = ref<any>([]);
 const pageIndex = ref<any>(1);
 const limit = ref<any>(15);
@@ -40,7 +39,7 @@ const totalPages = ref<any>(1);
 const router = useRouter()
 const route = useRoute();
 const { name, category } = route.query;
-await getMangas();
+
 async function updatePaginate(event: any) {
     pageIndex.value = event;
     await getMangas();
@@ -74,4 +73,8 @@ async function getMangas() {
         console.error(error);
     }
 }
+
+mainStore.setLoading(true);
+await getMangas();
+mainStore.setLoading(false);
 </script>
