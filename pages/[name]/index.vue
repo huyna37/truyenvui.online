@@ -4,11 +4,10 @@ import { debounce } from 'lodash';
 
 const route = useRoute();
 const { name } = route.params;
-let dataDetail: any;
-let listChapter = ref([]);
+let dataDetail = ref<any>({});
+let listChapter = ref<any>([]);
 let currentPage = 1;
 let isLoadingMore = false;
-let inputSearch = '';
 let listmanga = Array();
 let listMangaTop = Array();
 let isMaxList: Boolean;
@@ -19,7 +18,7 @@ let scrollContainerStyle = {
 let filterBy = '';
 
 
-async function scrollListMovie(reduce: boolean) {
+async function scrollListMovie(reduce?: boolean) {
     let container = document.getElementById('list-dont') as HTMLElement;
     if (!reduce) {
         container.scrollLeft += 200; // Cuộn 200px bên phải
@@ -90,26 +89,30 @@ async function loadMore() {
     isLoadingMore = true;
     currentPage += 1;
     const more = await getListChapter();
-    listChapter = [...listChapter, ...more.data];
+    listChapter.value = [...listChapter.value, ...more.data];
     isLoadingMore = false;
 }
 
 async function handleInput(event: any) {
     filterBy = event.target.value;
     currentPage = 1;
-    listChapter = (await getListChapter()).data;
+    listChapter.value = (await getListChapter()).data;
+    console.log(listChapter.value)
 }
-let debouncedHandleInput = computed(()=> {
+let debouncedHandleInput = computed(() => {
     return debounce(handleInput, 300);
 })
 
 let genre = dataDetail?.genre?.split(";")
 
-let newestPage = computed(()=>{
-    return listChapter[0];
+let newestPage = computed(() => {
+    return listChapter.value[0];
 })
-
+definePageMeta({
+    key: route => route.fullPath
+})
 const mainStore = useMainStore();
+
 const { setLoading } = mainStore;
 setLoading(true);
 await Promise.all([getDetail(), getListMangas(), getListMangasTop()]);
@@ -119,8 +122,12 @@ useHead({
         { name: 'description', content: dataDetail.description }
     ],
 });
-listChapter = (await getListChapter())?.data;
+listChapter.value = (await getListChapter())?.data;
+definePageMeta({
+    key: route => route.fullPath
+})
 setLoading(false);
+
 </script>
 <template>
     <div class='container tw-mt-[1rem]' v-if="dataDetail">
@@ -134,7 +141,7 @@ setLoading(false);
                         <img v-if="dataDetail._id" :src="`${dataDetail.showImage}`" class="tw-rounded-xl tw-w-[100%]" />
                     </div>
                     <div class='col-md-8'>
-                        <h4 class='tw-uppercase tw-text-[20px] tw-font-medium'>{{ dataDetail.name }}</h4>
+                        <h4 class='tw-uppercase tw-text-[20px] tw-font-medium'>{{ dataDetail.name.substring(0, 15) }}</h4>
                         <h5 class='tw-my-3 tw-font-medium'>{{ dataDetail.title }}</h5>
                         <div class="tw-mb-2 tw-text-[14px]">
                             <label class="tw-w-[100px] tw-inline-block">Tác giả</label>
@@ -200,8 +207,7 @@ setLoading(false);
                 <div class="tw-mt-[20px] s768:tw-mt-[30px] d-flex justify-content-between">
                     <span class="tw-uppercase tw-text-orange-600 ">Danh sách chap</span>
                     <div>
-                        <input
-                        @input="debouncedHandleInput"
+                        <input @input="debouncedHandleInput"
                             class="tw-pl-[7px] tw-rounded-full tw-w-full tw-text-[14px]focus:tw-border-red-200 tw-border-violet-200 tw-outline tw-outline-slate-200"
                             placeholder="Tìm kiếm" />
                     </div>

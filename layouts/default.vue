@@ -1,6 +1,7 @@
 <template>
     <div>
         <!-- <Navbar /> -->
+        <Header />
         <div class="container">
             <slot />
             <a href="#scroll" class="tw-fixed tw-right-[2%] tw-bottom-[10%] tw-text-[23px] tw-text-[rebeccapurple]">
@@ -13,10 +14,12 @@
   
 <script>
 import Footer from '@/components/layouts/main/Footer.vue';
+import Header from '@/components/layouts/main/Header.vue';
 
 export default {
     components: {
-        Footer
+        Footer,
+        Header
     },
     data() {
         return {

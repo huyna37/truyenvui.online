@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useAsyncData, useNuxtApp } from 'nuxt/app';
 import { useMainStore } from '@/store'
-let mangas1: any;;
-let mangas2: any;;
-let mangas3: any;;
-let mangas4: any;;
-let chapterNewest: any;
+let mangas1 = ref<any>([]);
+let mangas2 = ref<any>([]);
+let mangas3 = ref<any>([]);
+let mangas4 = ref<any>([]);
+let chapterNewest = ref<any>([]);
+
 let mangaSpecial = computed(() => {
     if (mangas1) {
         return mangas1[0];
@@ -74,7 +74,6 @@ async function getChapterNewest() {
     const { data } = await customFetch<any>(`/chapter/newest/?page=1&index=12`);
     chapterNewest = data.value.result;
 }
-const app = useNuxtApp();
 const mainStore = useMainStore();
 const { setLoading } = mainStore;
 

@@ -1,5 +1,5 @@
 <template>
-  <div v-show="isLoading">
+  <div v-show="loading">
         Loading...
     </div>
   <NuxtLayout>
@@ -10,6 +10,6 @@
 <script setup lang="ts">
 import { useMainStore } from '@/store';
 const mainStore = useMainStore();
-const { isLoading } = mainStore;
+const { loading } = mainStore;
 
 </script>

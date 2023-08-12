@@ -1,36 +1,20 @@
 <script setup lang="ts">
 import { useMainStore } from '@/store';
-import { debounce } from 'lodash';
 
 const route = useRoute();
 const { name, chapter } = route.params;
-let dataDetail = [];
-let visibleFiles = [];
-let manga = {};
-let listChapter = [];
+let dataDetail = ref<any>([]);
+let visibleFiles = ref<any>([]);
+let manga = ref<any>({});
+let listChapter = ref<any>([]);
 let currentChapter = 0;
-let listmanga = [];
-let chapterInfo = {}
+let listmanga = ref<any>([]);
+let chapterInfo = ref<any>({});
 
 const mainStore = useMainStore();
 const { setLoading } = mainStore;
 
-setLoading(true);
-await getManga();
-await getChapterInfo();
-await getContentByName();
-if (dataDetail.length > 0) {
-    renderFiles();
-}
-await Promise.all([getNewstChapter(), getListMangas()]);
-getCurrentChapter();
-setLoading(false);
-useHead({
-    title: `${manga.name} - ${chapterInfo.title}`,
-    meta: [
-        { name: 'description', content: manga.title }
-    ],
-});
+
 
 async function getListMangas() {
     const { data } = (await customFetch<any>('/manga/?page=1&limit=6&sortField=createdAt&sortOrder=desc'));
@@ -79,7 +63,7 @@ function renderFiles() {
 
 const prePage = computed(() => {
     let page = '#';
-    listChapter.forEach((chapter, index) => {
+    listChapter.forEach((chapter: any, index: any) => {
         if (chapter.number === currentChapter && listChapter[index]?.number && listChapter[index + 1]?.number) {
             page = `/${name}/chap-${listChapter[index + 1].number}`;
         }
@@ -88,7 +72,7 @@ const prePage = computed(() => {
 });
 const nextPage = computed(() => {
     let page = '#';
-    listChapter.forEach((chapter, index) => {
+    listChapter.forEach((chapter: any, index: any) => {
         if (chapter.number === currentChapter && listChapter[index]?.number && listChapter[index - 1]?.number) {
             page = `/${name}/chap-${listChapter[index - 1].number}`;
         }
@@ -100,6 +84,22 @@ const newestPage = computed(() => {
     return listChapter[0];
 })
 
+setLoading(true);
+await getManga();
+await getChapterInfo();
+await getContentByName();
+if (dataDetail.length > 0) {
+    renderFiles();
+}
+await Promise.all([getNewstChapter(), getListMangas()]);
+getCurrentChapter();
+setLoading(false);
+useHead({
+    title: `${manga.name} - ${chapterInfo.title}`,
+    meta: [
+        { name: 'description', content: manga.title }
+    ],
+});
 </script>
 <template>
     <div class='container tw-mt-[1rem]'>
