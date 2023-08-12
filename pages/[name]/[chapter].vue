@@ -97,9 +97,22 @@ setLoading(false);
 useHead({
     title: `${manga.name} - ${chapterInfo.title}`,
     meta: [
-        { name: 'description', content: manga.title }
+        { name: 'description', content: `${manga.title} - ${chapterInfo.title}` },
+        { name: 'keywords', content: manga.genre},
+        { property: 'og:title', content: `${manga.title} - ${chapterInfo.title}`},
+        { property: 'og:description', content: `${manga.name} - ${chapterInfo.title}`},
+        { property: 'og:image', content: manga.coverImage},
+        {
+            property: 'og:image:width',
+            content: 512,
+        },
+        {
+            property: 'og:image:height',
+            content: 512,
+        },
     ],
 });
+
 </script>
 <template>
     <div class='container tw-mt-[1rem]'>

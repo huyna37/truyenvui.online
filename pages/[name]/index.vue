@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useMainStore } from '@/store';
-import { debounce } from 'lodash';
 
 const route = useRoute();
 const { name } = route.params;
@@ -100,7 +99,7 @@ async function handleInput(event: any) {
     console.log(listChapter.value)
 }
 let debouncedHandleInput = computed(() => {
-    return debounce(handleInput, 300);
+    return useDebounce(handleInput, 300);
 })
 
 let genre = dataDetail?.genre?.split(";")
@@ -108,9 +107,7 @@ let genre = dataDetail?.genre?.split(";")
 let newestPage = computed(() => {
     return listChapter.value[0];
 })
-definePageMeta({
-    key: route => route.fullPath
-})
+
 const mainStore = useMainStore();
 
 const { setLoading } = mainStore;
@@ -119,13 +116,60 @@ await Promise.all([getDetail(), getListMangas(), getListMangasTop()]);
 useHead({
     title: `${dataDetail.name} - NetTruyenVui`,
     meta: [
-        { name: 'description', content: dataDetail.description }
+        { name: 'description', content: dataDetail.description },
+        // Test on: https://developers.facebook.com/tools/debug/ or https://socialsharepreview.com/
+        { property: 'og:site_name', content: route.fullPath },
+        { hid: 'og:type', property: 'og:type', content: 'website' },
+        {
+            property: 'og:url',
+            content: route.fullPath,
+        },
+        {
+            property: 'og:title',
+            content: dataDetail.name,
+        },
+        {
+            property: 'og:image:alt',
+            content: dataDetail.title,
+        },
+        {
+            property: 'og:image:width',
+            content: 512,
+        },
+        {
+            property: 'og:image:height',
+            content: 512,
+        },
+        {
+            property: 'og:description',
+            content: dataDetail.description,
+        },
+        {
+            property: 'og:image',
+            content: dataDetail.showImage,
+        },
+        // Test on: https://cards-dev.twitter.com/validator or https://socialsharepreview.com/
+        { name: 'twitter:site', content: route.fullPath },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        {
+            name: 'twitter:url',
+            content: route.fullPath,
+        },
+        {
+            name: 'twitter:title',
+            content: dataDetail.name,
+        },
+        {
+            name: 'twitter:description',
+            content: dataDetail.description,
+        },
+        {
+            name: 'twitter:image',
+            content: dataDetail.coverImage,
+        },
     ],
 });
 listChapter.value = (await getListChapter())?.data;
-definePageMeta({
-    key: route => route.fullPath
-})
 setLoading(false);
 
 </script>

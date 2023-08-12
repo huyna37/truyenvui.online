@@ -1,13 +1,17 @@
 export const useMainStore = defineStore('main', () => {
-  let loading = ref(false);
-  let isNavOpen = ref(false);
-  let currentPath = ref('');
+  const loading = ref(false);
+  const isNavOpen = ref(false);
+  const currentPath = ref('');
+
   function setLoading(value) {
-    loading = value;
+    loading.value = value; // Update the value property of the ref
   }
+
   function setNavOpen(value) {
-    isNavOpen = value;
+    isNavOpen.value = value;
+    console.log(isNavOpen.value); // Log the current value of isNavOpen
   }
-  return { loading, setLoading, isNavOpen, currentPath, setNavOpen };
-}
-)
+  
+
+  return { loading: loading.value, setLoading, isNavOpen: isNavOpen.value, currentPath, setNavOpen };
+});

@@ -180,18 +180,19 @@ import { useMainStore } from '@/store';
 const router = useRouter();
 const mainStore = useMainStore();
 const { isNavOpen, currentPath, setNavOpen } = mainStore;
-let input = ref('');
+
+let input = '';
 let isActiveCategory = computed(() => {
   if (!currentPath) return false;
   return currentPath.startsWith("/the-loai");
 })
 function search() {
-  router.push(`/danh-sach/${input}`)
+  router.push(`/danh-sach?name=${input}`)
 };
 function toggleNav() {
-  setNavOpen(!isNavOpen)
+  setNavOpen(true);
+  console.log(isNavOpen)
 }
-console.log(isNavOpen)
 </script>
   
 <style>

@@ -19,7 +19,7 @@ let manga1expect = computed(() => {
 // Filter the mangas1 array and return elements where value is not equal to 0
 return mangas1.slice(1);
 });
-let scrollContainerStyle = {
+let scrollContainerStyle :any = {
     scrollBehavior: "smooth",
     overflowX: "scroll",
 };
@@ -91,9 +91,6 @@ console.log(chapterNewest)
                     <div class="tw-h-full tw-relative">
                         <img class="tw-w-full tw-h-full tw-rounded-xl" :src="`${mangaSpecial.showImage}`" data-id="100322"
                             :alt="mangaSpecial.name">
-                        <!-- <img class="tw-w-full tw-h-full tw-rounded-xl"
-                            :src="`https://crawler.meoden.online/manga/${mangaSpecial._id}/showImage`" data-id="100322"
-                            :alt="mangaSpecial.name"> -->
                         <div
                             class="tw-rounded-xl tw-absolute tw-left-0 tw-right-0 tw-bottom-0 tw-px-[10px] max-md:tw-pt-[5px] tw-pt-[80px] tw-pb-[5px] tw-bg-gradient-to-b tw-from-transparent tw-to-black tw-text-white tw-dark:text-teal-500">
                             <span class="tw-font-extralight tw-text-[12px] tw-dark:text-teal-300">{{ mangaSpecial.views }}
