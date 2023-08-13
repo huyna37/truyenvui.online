@@ -117,34 +117,34 @@ useHead({
     meta: [
         { name: 'description', content: dataDetail.description },
         // Test on: https://developers.facebook.com/tools/debug/ or https://socialsharepreview.com/
-        { property: 'og:site_name', content: route.fullPath },
-        { hid: 'og:type', property: 'og:type', content: 'website' },
+        { name: 'og:site_name', content: route.fullPath },
+        { name: 'og:type', content: 'website' },
         {
-            property: 'og:url',
+            name: 'og:url',
             content: route.fullPath,
         },
         {
-            property: 'og:title',
+            name: 'og:title',
             content: dataDetail.name,
         },
         {
-            property: 'og:image:alt',
+            name: 'og:image:alt',
             content: dataDetail.title,
         },
         {
-            property: 'og:image:width',
+            name: 'og:image:width',
             content: 512,
         },
         {
-            property: 'og:image:height',
+            name: 'og:image:height',
             content: 512,
         },
         {
-            property: 'og:description',
+            name: 'og:description',
             content: dataDetail.description,
         },
         {
-            property: 'og:image',
+            name: 'og:image',
             content: dataDetail.showImage,
         },
         // Test on: https://cards-dev.twitter.com/validator or https://socialsharepreview.com/
@@ -167,6 +167,9 @@ useHead({
             content: dataDetail.coverImage,
         },
     ],
+    link: [
+        { rel: 'canonical', href: 'https://truyenvui.online' + route.fullPath },
+    ]
 });
 listChapter.value = (await getListChapter())?.data;
 mainStore.setLoading(false);

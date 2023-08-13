@@ -9,15 +9,14 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { hid: 'description', name: 'description', content: '' },
+        { name: 'description', content: 'Tuyển tập những truyện mới nhất | Truyenvui.online' },
         { name: 'format-detection', content: 'telephone=no' },
-        { name: 'keywords', content: 'Truyenvui.online, Truyenvui luôn cập nhật 24/24'},
-        { name: 'og:title', content: 'Tuyển tập những truyện mới nhất | Truyenvui.online'},
-        { name: 'og:description', content: 'Truyện Mới hàng ngày!'},
-        { name: 'og:image', content: 'https://s199.imacdn.com/tt24/2022/08/20/a1d6f1225feaed6f_3dcdf651b16b6157_78077166097978499674.jpg'},
-        { name: 'og:image:width', content: '512'},
-        { name: 'og:image:height', content: '512'},
-
+        { name: 'keywords', content: 'Truyenvui.online, Truyenvui luôn cập nhật 24/24' },
+        { name: 'og:title', content: 'Tuyển tập những truyện mới nhất | Truyenvui.online' },
+        { name: 'og:description', content: 'Truyện Mới hàng ngày!' },
+        { name: 'og:image', content: 'https://s199.imacdn.com/tt24/2022/08/20/a1d6f1225feaed6f_3dcdf651b16b6157_78077166097978499674.jpg' },
+        { name: 'og:image:width', content: '512' },
+        { name: 'og:image:height', content: '512' },
       ],
       link: [
         { rel: 'canonical', href:'https://Truyenvui.online/'},

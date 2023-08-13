@@ -96,18 +96,21 @@ useHead({
     meta: [
         { name: 'description', content: `${manga.title} - ${chapterInfo.title}` },
         { name: 'keywords', content: manga.genre},
-        { property: 'og:title', content: `${manga.title} - ${chapterInfo.title}`},
-        { property: 'og:description', content: `${manga.name} - ${chapterInfo.title}`},
-        { property: 'og:image', content: manga.coverImage},
+        { name: 'og:title', content: `${manga.title} - ${chapterInfo.title}`},
+        { name: 'og:description', content: `${manga.name} - ${chapterInfo.title}`},
+        { name: 'og:image', content: manga.coverImage},
         {
-            property: 'og:image:width',
+            name: 'og:image:width',
             content: 512,
         },
         {
-            property: 'og:image:height',
+            name: 'og:image:height',
             content: 512,
         },
     ],
+    link: [
+        { rel: 'canonical', href: 'https://truyenvui.online' + route.fullPath },
+    ]
 });
 
 </script>
