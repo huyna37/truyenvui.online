@@ -8,8 +8,24 @@ const limit = ref<any>(15);
 const totalPages = ref<any>(1);
 const router = useRouter()
 const route = useRoute();
-const { name, category } = route.query;
+const name = ref(route.query.name);
+const category = ref(route.query.category);
 
+onBeforeRouteUpdate(async (to, from, next) => {
+    mainStore.setLoading(true);
+    if (to.hash.startsWith('#')) {
+        next();
+        return;
+    }
+    name.value = to.query.name;
+    category.value = to.query.category;
+    // Thực hiện các tác vụ tải lại component hoặc khởi tạo lại dữ liệu
+    await getMangas(); // Ví dụ: Gọi phương thức loadData để tải lại dữ liệu
+
+    mainStore.setLoading(false);
+    // Tiếp tục điều hướng
+    next();
+});
 async function updatePaginate(event: any) {
     pageIndex.value = event;
     await getMangas();
@@ -22,11 +38,11 @@ async function getMangas() {
             sortField: 'createdAt',
             sortOrder: 'desc'
         }
-        if (category) {
-            query.filterOptions = JSON.stringify({ "genre": { $regex: `\\b${category}\\b`, $options: 'i' } });
+        if (category.value) {
+            query.filterOptions = JSON.stringify({ "genre": { $regex: `\\b${category.value}\\b`, $options: 'i' } });
         }
-        if (name) {
-            query.filter = JSON.stringify({ name: name })
+        if (name.value) {
+            query.filter = JSON.stringify({ name: name.value })
         }
         const { data: response } = await customFetch<any>(`/manga/`, {
             params: query

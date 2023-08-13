@@ -281,7 +281,7 @@ mainStore.setLoading(false);
 
                                 </span>
                                 <span class="tw-shrink tw-text-right chapter-update">
-                                    {{ chapter.createdAt }}
+                                    <NuxtTime :datetime="chapter.createdAt" second="numeric" month="long" day="numeric" />
                                 </span>
                                 <span class="tw-min-w-[80px] tw-shrink-0 tw-text-right tw-chapter-views">
                                     {{ chapter.views }}

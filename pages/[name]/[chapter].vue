@@ -19,7 +19,8 @@ async function getListMangas() {
 }
 function getCurrentChapter() {
     const regex = /(\d+(\.\d+)?)/;
-    const matches = chapter.match(regex);
+    const matches = chapter.toString().match(regex);
+    if(!matches) return 1;
     currentChapter = parseFloat(matches[0]);
 }
 async function getNewstChapter() {
