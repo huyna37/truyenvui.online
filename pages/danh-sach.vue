@@ -1,3 +1,53 @@
+<script setup lang="ts">
+import { useMainStore } from '@/store'
+import Paginate from '@/components/shared/paginated.vue'
+const mainStore = useMainStore();
+const resultPage = ref<any>([]);
+const pageIndex = ref<any>(1);
+const limit = ref<any>(15);
+const totalPages = ref<any>(1);
+const router = useRouter()
+const route = useRoute();
+const { name, category } = route.query;
+
+async function updatePaginate(event: any) {
+    pageIndex.value = event;
+    await getMangas();
+}
+async function getMangas() {
+    try {
+        let query: any = {
+            page: pageIndex,
+            limit: limit,
+            sortField: 'createdAt',
+            sortOrder: 'desc'
+        }
+        if (category) {
+            query.filterOptions = JSON.stringify({ "genre": { $regex: `\\b${category}\\b`, $options: 'i' } });
+        }
+        if (name) {
+            query.filter = JSON.stringify({ name: name })
+        }
+        const { data: response } = await customFetch<any>(`/manga/`, {
+            params: query
+        });
+        resultPage.value = response.value.result.data;
+
+        if (resultPage.length === 1) {
+            const manga = resultPage[0];
+            router.push(`/${manga.slug}`);
+        }
+        totalPages.value = response.value.result.totalPages;
+    } catch (error) {
+        // Xử lý lỗi ở đây nếu cần thiết
+        console.error(error);
+    }
+}
+
+mainStore.setLoading(true);
+await getMangas();
+mainStore.setLoading(false);
+</script>
 <template>
     <div class='container tw-mt-[1rem]'>
         <template v-if="resultPage && resultPage.length > 0">
@@ -27,54 +77,3 @@
         </template>
     </div>
 </template>
-
-<script setup lang="ts">
-import { useMainStore } from '@/store'
-import Paginate from '@/components/shared/paginated.vue'
-const mainStore = useMainStore();
-const resultPage = ref<any>([]);
-const pageIndex = ref<any>(1);
-const limit = ref<any>(15);
-const totalPages = ref<any>(1);
-const router = useRouter()
-const route = useRoute();
-const { name, category } = route.query;
-
-async function updatePaginate(event: any) {
-    pageIndex.value = event;
-    await getMangas();
-}
-async function getMangas() {
-    try {
-        let query : any = {
-            page: pageIndex,
-            limit: limit,
-            sortField: 'createdAt',
-            sortOrder: 'desc'
-        }
-        if (category) {
-            query.filterOptions = JSON.stringify({ "genre": { $regex: `\\b${category}\\b`, $options: 'i' } });
-        }
-        if (name) {
-            query.filter = JSON.stringify({ name: name })
-        }
-        const {data: response} = await customFetch<any>(`/manga/`, {
-            params: query
-        });
-        resultPage.value = response.value.result.data;
-        
-        if (resultPage.length === 1) {
-            const manga = resultPage[0];
-            router.push(`/${manga.slug}`);
-        }
-        totalPages.value = response.value.result.totalPages;
-    } catch (error) {
-        // Xử lý lỗi ở đây nếu cần thiết
-        console.error(error);
-    }
-}
-
-mainStore.setLoading(true);
-await getMangas();
-mainStore.setLoading(false);
-</script>

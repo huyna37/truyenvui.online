@@ -1,8 +1,8 @@
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  // devtools: { enabled: true },
   app: {
     head: {
-      title: 'animemoi',
+      title: 'Truyen Vui',
       htmlAttrs: {
         lang: 'en'
       },
@@ -29,7 +29,8 @@ export default defineNuxtConfig({
   modules: [
     "@nuxtjs/tailwindcss",
     "@pinia/nuxt",
-    "nuxt-lodash"
+    "nuxt-lodash",
+    ['@nuxtjs/robots', { configPath:'./robots.js' }]
   ],
   devServer: {
     port: 3001
@@ -39,5 +40,5 @@ export default defineNuxtConfig({
       // automatically imports `defineStore`
       'defineStore', // import { defineStore } from 'pinia'
     ],
-  },
+  }
 })

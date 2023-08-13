@@ -4,11 +4,9 @@
  
  </template>
    
- <script>
+ <script setup>
  
- export default {
-    
- }
+ 
  </script>
    
  <style></style>

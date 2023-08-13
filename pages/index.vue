@@ -16,10 +16,9 @@ let isMaxList = false;
 let manga1expect = computed(() => {
     if (!mangas1) return [];
 
-// Filter the mangas1 array and return elements where value is not equal to 0
-return mangas1.slice(1);
+    return mangas1.slice(1);
 });
-let scrollContainerStyle :any = {
+let scrollContainerStyle: any = {
     scrollBehavior: "smooth",
     overflowX: "scroll",
 };
@@ -46,7 +45,7 @@ async function getMangas3() {
 }
 async function getMangas4() {
     // Chuẩn bị truy vấn tìm kiếm
-    const query = {
+    const query : any = {
         page: 1,
         limit: 12,
         sortField: "views",
@@ -140,7 +139,6 @@ setLoading(false);
                             class="tw-relative max-md:odd:tw-mt-2 max-md:old:tw-mr-1 max-md:tw-mr-[5px] md:tw-mr-[5px] tw-h-[160px] tw-rounded-xl">
                             <NuxtLink :to="'/'">
                                 <div class="tw-h-full tw-relative">
-                                    <img>
                                     <div
                                         class="tw-absolute tw-rounded-xl tw-left-0 tw-right-0 tw-bottom-0 tw-px-[10px] max-md:tw-pt-[5px] tw-pt-[80px] tw-pb-[5px] tw-bg-gradient-to-b tw-from-transparent tw-to-black tw-text-white tw-dark:text-teal-500">
                                         <span class="tw-font-extralight tw-text-[12px] tw-dark:text-teal-300">1,371,610 lượt

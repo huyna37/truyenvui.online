@@ -12,36 +12,22 @@
     </div>
 </template>
   
-<script>
+<script setup lang="ts">
 import Footer from '@/components/layouts/main/Footer.vue';
 import Header from '@/components/layouts/main/Header.vue';
+let isScrolledToBottom = false;
 
-export default {
-    components: {
-        Footer,
-        Header
-    },
-    data() {
-        return {
-            isScrolledToBottom: false
-        };
-    },
-
-    methods: {
-        handleScroll() {
-            const scrollPosition = window.scrollY;
-            if (scrollPosition === 0) {
-                this.isScrolledToBottom = false;
-                return;
-            }
-            const windowHeight = window.innerHeight;
-            const documentHeight = document.documentElement.scrollHeight;
-
-            this.isScrolledToBottom = scrollPosition + windowHeight >= documentHeight;
-        },
-
+function handleScroll() {
+    const scrollPosition = window.scrollY;
+    if (scrollPosition === 0) {
+        isScrolledToBottom = false;
+        return;
     }
-};
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    isScrolledToBottom = scrollPosition + windowHeight >= documentHeight;
+}
 </script>
   
 <style></style>

@@ -1,5 +1,5 @@
 <template>
-  <Loading v-show="mainStore.loading" v-model:active="mainStore.loading" :can-cancel="true" :is-full-page="true" />
+  <Loading v-if="mainStore.loading" v-model:active="mainStore.loading" :can-cancel="true" :is-full-page="true" />
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
