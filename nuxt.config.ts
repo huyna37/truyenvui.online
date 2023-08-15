@@ -49,7 +49,8 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'nuxt-lodash',
     ['@nuxtjs/robots', { configPath: './robots.js' }],
-    'nuxt-time'
+    'nuxt-time',
+    '@nuxt/image'
   ],
   devServer: {
     port: 3001

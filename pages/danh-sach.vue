@@ -74,7 +74,7 @@ mainStore.setLoading(false);
                 <div class="col-lg-2 col-md-3 col-sm-4 col-4" v-for="manga in resultPage" v-bind:key="manga">
                     <NuxtLink :to="'/' + manga.slug"
                         class='col-lg-2 col-md-3 col-4 max-lg:tw-mb-[2.5rem] hover:overscroll-contain hover:tw-shadow-2xl'>
-                        <img class="tw-h-[auto] tw-w-full tw-rounded-xl" :src="manga.coverImage" :alt="manga.name">
+                        <nuxt-img format="webp" :src="manga.coverImage" class="tw-h-[auto] tw-w-full tw-rounded-xl" :alt="manga.name" />
                         <p
                             class='tw-text-slate-800 tw-h-[37px] tw-overflow-hidden tw-text-center tw-mt-1 max-sm:tw-text-[11px] tw-text-[13px]'>
                             {{ manga.name }}

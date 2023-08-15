@@ -15,23 +15,26 @@
 <script setup lang="ts">
 import Footer from '@/components/layouts/main/Footer.vue';
 import Header from '@/components/layouts/main/Header.vue';
-let isScrolledToBottom = false;
+let isScrolledToBottom = ref(false);
 
-const app = useNuxtApp();
-app.hook('app:mounted', ()=> {
+onMounted(()=> {
     window.addEventListener('scroll', handleScroll);
 })
 
+
 function handleScroll() {
+    if(isScrolledToBottom.value) {
+        window.scrollTo(0, 0);
+    }
     const scrollPosition = window.scrollY;
     if (scrollPosition === 0) {
-        isScrolledToBottom = false;
+        isScrolledToBottom.value = false;
         return;
     }
     const windowHeight = window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
 
-    isScrolledToBottom = scrollPosition + windowHeight >= documentHeight;
+    isScrolledToBottom.value = scrollPosition + windowHeight >= documentHeight;
 }
 </script>
   

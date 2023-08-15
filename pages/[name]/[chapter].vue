@@ -39,7 +39,7 @@ async function getChapterInfo() {
 async function getContentByName() {
     try {
         const { data } = (await customFetch<any>(`/image/getChapterByImage/${chapterInfo._id}`));
-        dataDetail = data.value.result
+        dataDetail.value = data.value.result
     }
     catch (e) {
         console.log(e)
@@ -47,11 +47,11 @@ async function getContentByName() {
 }
 function renderFiles() {
     const numVisibleFiles = 7; // Số phần tử hiển thị ban đầu
-    if (!dataDetail) return;
-    visibleFiles = dataDetail.slice(0, numVisibleFiles);
+    if (!dataDetail.value) return;
+    visibleFiles = dataDetail.value.slice(0, numVisibleFiles);
 
-    const remainingFiles = dataDetail.slice(numVisibleFiles);
-    if (remainingFiles.length > 0) {
+    const remainingFiles = dataDetail.value.slice(numVisibleFiles);
+    if (remainingFiles?.length > 0) {
         // Tạo delay 1 giây để load phần tử còn lại
         setTimeout(() => {
             visibleFiles = visibleFiles.concat(remainingFiles);
@@ -86,10 +86,9 @@ mainStore.setLoading(true);
 await getManga();
 await getChapterInfo();
 await getContentByName();
-if (dataDetail.length > 0) {
-    renderFiles();
-}
-await Promise.all([getNewstChapter(), getListMangas()]);
+renderFiles();
+await getNewstChapter();
+await getListMangas();
 getCurrentChapter();
 mainStore.setLoading(false);
 useHead({
@@ -129,10 +128,10 @@ useHead({
         <section class="row mb-3 mt-2">
             <div class='col-md-8 row max-md:tw-mb-2' v-if="manga">
                 <div class='col-md-4 col-sm-12' :class="{ 'max-md:tw-hidden': manga.showImage }">
-                    <img :src="`${manga?.coverImage}`" class="tw-rounded-xl tw-w-[100%]" />
+                    <nuxt-img format="webp" :src="manga.coverImage" class="tw-rounded-xl tw-w-[100%]" :alt="manga.name" />
                 </div>
                 <div class='col-md-4 col-sm-12 tw-hidden max-md:tw-block'>
-                    <img :src="`${manga.showImage}`" class="tw-rounded-xl tw-w-[100%]" />
+                    <nuxt-img format="webp" :src="manga.showImage" class="tw-rounded-xl tw-w-[100%]" :alt="manga.name" />
                 </div>
                 <div class='col-md-8'>
                     <h4 class='tw-uppercase tw-text-[20px] tw-font-medium'>{{ manga.name }}</h4>
@@ -181,13 +180,13 @@ useHead({
         </section>
         <hr />
         <main class='row tw-mt-[20px] tw-text-center d-flex justify-content-center'>
-            <template v-if="!visibleFiles || visibleFiles.length === 0">
+            <template v-if="!visibleFiles || visibleFiles?.length === 0">
                 <div class="alert alert-primary tw-mt-3" role="alert">
                     Loading...
                 </div>
             </template>
-            <template v-for="(img, index) in visibleFiles" :key="index">
-                <img class="tw-w-[auto]" :src="img.link" />
+            <template v-for="img in visibleFiles" :key="index">
+                <nuxt-img format="webp" :src="img.link" class="tw-w-[auto]" :alt="manga.name" />
             </template>
             <div
                 class="tw-fixed tw-bottom-[10px] tw-left-0 tw-right-0 tw-w-[300px] tw-bg-black/50 tw-rounded-2xl tw-py-[10px] tw-mx-auto tw-flex tw-justify-center tw-gap-[10px] tw-z-50">
@@ -236,7 +235,7 @@ useHead({
             </h2>
             <NuxtLink :to="'/' + manga2.slug" v-for="manga2 in listmanga" v-bind:key="manga2"
                 class='col-lg-2 col-md-3 col-4 max-lg:tw-mb-[2rem] hover:overscroll-contain hover:tw-shadow-2xl tw-rounded-xl'>
-                <img class="tw-w-full tw-h-full" v-if="manga2?._id" :src="`${manga2?.coverImage}`" :alt="manga2.name">
+                <nuxt-img format="webp" :src="manga2.coverImage" class="tw-w-full tw-h-full" :alt="manga.name" />
                 <p class='tw-text-slate-800 tw-text-center tw-mt-1 max-sm:tw-text-[11px] tw-text-[13px]'>{{ manga2.name }}
                 </p>
             </NuxtLink>

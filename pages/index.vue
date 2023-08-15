@@ -12,7 +12,7 @@ let mangaSpecial = computed(() => {
     }
     return null;
 })
-let isMaxList = false;
+let isMaxList = ref(false);
 let manga1expect = computed(() => {
     if (!mangas1) return [];
 
@@ -62,10 +62,10 @@ function scrollListMovie(reduce?: any) {
     if (!container) return;
     if (!reduce) {
         container.scrollLeft += 200; // Cuộn 200px bên phải
-        isMaxList = container.scrollLeft >= (container.scrollWidth - container.clientWidth) - 300;
+        isMaxList.value = container.scrollLeft >= (container.scrollWidth - container.clientWidth) - 300;
     } else {
         container.scrollLeft = 0; // Cuộn về đầu danh sách
-        isMaxList = false;
+        isMaxList.value = false;
     }
 }
 
@@ -87,8 +87,7 @@ setLoading(false);
             <template v-if="mangaSpecial">
                 <NuxtLink :to='mangaSpecial.slug' class='col-md-12 col-lg-6 max-md:tw-mb-[1rem] tw-min-h-[10rem]'>
                     <div class="tw-h-full tw-relative">
-                        <img class="tw-w-full tw-h-full tw-rounded-xl" :src="`${mangaSpecial.showImage}`" data-id="100322"
-                            :alt="mangaSpecial.name">
+                        <nuxt-img format="webp" :src="mangaSpecial.showImage" class="tw-w-full tw-h-full tw-rounded-xl" :alt="mangaSpecial.name" />
                         <div
                             class="tw-rounded-xl tw-absolute tw-left-0 tw-right-0 tw-bottom-0 tw-px-[10px] max-md:tw-pt-[5px] tw-pt-[80px] tw-pb-[5px] tw-bg-gradient-to-b tw-from-transparent tw-to-black tw-text-white tw-dark:text-teal-500">
                             <span class="tw-font-extralight tw-text-[12px] tw-dark:text-teal-300">{{ mangaSpecial.views }}
@@ -118,8 +117,7 @@ setLoading(false);
                             class="tw-relative max-md:odd:tw-mt-2 max-md:old:tw-mr-1 max-md:tw-mr-[5px] md:tw-mr-[5px] tw-h-[160px]">
                             <NuxtLink :to="data2?.slug ?? '/'">
                                 <div class="tw-h-full tw-relative">
-                                    <img class="tw-w-full tw-h-full tw-rounded-xl" :src="`${data2.showImage}`"
-                                        data-id="100305" :alt="data2.name">
+                                    <nuxt-img format="webp" :src="data2.showImage" class="tw-w-full tw-h-full tw-rounded-xl" :alt="data2.name" />
                                     <div
                                         class="tw-absolute tw-rounded-xl tw-left-0 tw-right-0 tw-bottom-0 tw-px-[10px] max-md:tw-pt-[5px] tw-pt-[80px] tw-pb-[5px] tw-bg-gradient-to-b tw-from-transparent tw-to-black tw-text-white tw-dark:text-teal-500">
                                         <span class="tw-font-extralight tw-text-[12px] tw-dark:text-teal-300">{{ data2.views
@@ -163,8 +161,7 @@ setLoading(false);
             <NuxtLink v-for="chapterNew in chapterNewest" v-bind:key="chapterNew"
                 :to="`${chapterNew.manga.slug}/${chapterNew.slug}` ?? '#'"
                 class='col-lg-2 col-md-3 col-4 max-lg:tw-mb-[1rem] hover:overscroll-contain hover:tw-shadow-2xl scroll-none-custom'>
-                <img class="tw-h-[auto] tw-w-full tw-rounded-xl max-md:tw-h-[14rem] md:tw-h-[18rem]"
-                    :src="`${chapterNew.manga.coverImage}`" :alt="chapterNew.manga.name">
+                <nuxt-img format="webp" :src="chapterNew.manga.coverImage" class="tw-h-[auto] tw-w-full tw-rounded-xl max-md:tw-h-[14rem] md:tw-h-[18rem]" :alt="chapterNew.manga.name" />
                 <p class='tw-text-slate-800 tw-h-[42px] tw-overflow-hidden tw-text-center tw-mt-1 tw-text-[13px]'>
                     <b>{{ chapterNew.manga.name }}</b> - <b>{{ chapterNew.title }}</b>
                 </p>
@@ -183,7 +180,7 @@ setLoading(false);
                         class="tw-relative tw-snap-always tw-snap-start tw-shrink-0 tw-w-[290px] s640:tw-w-auto s640:tw-h-auto tw-min-h-[190px]">
                         <NuxtLink :to="data4.slug">
                             <div class="tw-overflow-hidden tw-w-full tw-rounded-xl">
-                                <img class="tw-w-full tw-h-full" :src="`${data4.showImage}`" :alt="data4.name">
+                                <nuxt-img format="webp" :src="data4.showImage" class="tw-w-full tw-h-full" :alt="data4.name" />
                                 <span
                                     class="tw-absolute tw-top-[10px] tw-left-[10px] tw-rounded-lg tw-px-2 tw-bg-violet-900/80 dark:tw-bg-teal-900/80 tw-text-white tw-text-[12px] tw-font-light">{{
                                         data4.views }}
@@ -216,8 +213,7 @@ setLoading(false);
             </h2>
             <NuxtLink v-for="data3 in mangas3" v-bind:key="data3" :to="data3.slug ?? '#'"
                 class='col-lg-2 col-md-3 col-4 max-lg:tw-mb-[1rem] hover:overscroll-contain hover:tw-shadow-2xl scroll-none-custom'>
-                <img class="tw-h-[auto] tw-w-full tw-rounded-xl max-md:tw-h-[14rem] md:tw-h-[18rem]"
-                    :src="`${data3.coverImage}`" :alt="data3.name">
+                <nuxt-img format="webp" :src="data3.coverImage" class="tw-h-[auto] tw-w-full tw-rounded-xl max-md:tw-h-[14rem] md:tw-h-[18rem]" :alt="data3.name" />
                 <p class='tw-text-slate-800 tw-h-[42px] tw-overflow-hidden tw-text-center tw-mt-1 tw-text-[13px]'>
                     {{ data3.name }}
                 </p>
@@ -231,8 +227,7 @@ setLoading(false);
             <template v-for="(data5) in mangas4" v-bind:key="data5">
                 <NuxtLink :to="data5.slug"
                     class='col-lg-2 col-md-3 col-4 max-lg:tw-mb-[1rem] hover:overscroll-contain hover:tw-shadow-2xl'>
-                    <img class="tw-h-[auto] tw-w-full tw-rounded-xl max-md:tw-h-[14rem] md:tw-h-[18rem]"
-                        :src="`${data5.coverImage}`" :alt="data5.name">
+                    <nuxt-img format="webp" :src="data5.coverImage" class="tw-h-[auto] tw-w-full tw-rounded-xl max-md:tw-h-[14rem] md:tw-h-[18rem]" :alt="data5.name" />
                     <p class='tw-text-slate-800 tw-h-[42px] tw-overflow-hidden tw-text-center tw-mt-1 tw-text-[13px]'>
                         {{ data5.name }}
                     </p>

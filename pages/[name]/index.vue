@@ -7,14 +7,15 @@ let dataDetail = ref<any>({});
 let listChapter = ref<any>([]);
 let currentPage = 1;
 let isLoadingMore = false;
-let listmanga = Array();
-let listMangaTop = Array();
+let listmanga = ref<any>([]);
+let listMangaTop = ref<any>([]);
 let isMaxList: Boolean;
-let scrollContainerStyle = {
+let scrollContainerStyle : any = {
     scrollBehavior: "smooth",
     overflowX: "scroll",
 };
 let filterBy = '';
+let chapterFirst = ref<any>({});
 
 
 async function scrollListMovie(reduce?: boolean) {
@@ -30,7 +31,7 @@ async function scrollListMovie(reduce?: boolean) {
 
 async function getListMangas() {
     try {
-        let query = {
+        let queryList = {
             page: 1,
             limit: 15,
             sortField: 'createdAt',
@@ -39,10 +40,10 @@ async function getListMangas() {
                 "genre": { "$regex": "\\bcomedy\\b", "$options": "i" }
             })
         };
-        const { data } = await customFetch<any>(`/manga/`, {
-            params: query
+        const { data: list } = await customFetch<any>(`/manga/`, {
+            params: queryList
         });
-        listmanga = data.value.result.data;
+        listmanga.value = list.value.result.data;
     } catch (error) {
         // Xử lý lỗi ở đây nếu cần thiết
         console.error('Error in getListMangas:', error);
@@ -60,10 +61,10 @@ async function getListMangasTop() {
                 "genre": { "$regex": "\\bYuri\\b", "$options": "i" }
             })
         };
-        const { data } = await customFetch<any>(`/manga/`, {
+        const { data: top } = await customFetch<any>(`/manga/`, {
             params: query
         });
-        listMangaTop = data.value.result.data;
+        listMangaTop.value = top.value.result.data;
     } catch (error) {
         // Xử lý lỗi ở đây nếu cần thiết
         console.error('Error in getListMangasTop:', error);
@@ -71,8 +72,14 @@ async function getListMangasTop() {
 }
 
 async function getDetail() {
-    const { data } = (await customFetch<any>('/manga/' + name));
-    dataDetail = data.value.result;
+    const { data: detail } = (await customFetch<any>('/manga/' + name));
+    dataDetail = detail.value.result;
+}
+
+async function getChapterFirst() {
+    let urlValue = `/chapter/?page=1&index=1&sortField=number&sortOrder=asc&filterOptions={"manga":"${dataDetail._id}"}`;
+    const { data } = await customFetch<any>(urlValue);
+    chapterFirst.value = data.value.result.data[0];
 }
 
 async function getListChapter() {
@@ -111,7 +118,9 @@ let newestPage = computed(() => {
 const mainStore = useMainStore();
 
 mainStore.setLoading(true);
-await Promise.all([getDetail(), getListMangas(), getListMangasTop()]);
+await getDetail();
+await getListMangas();
+await getListMangasTop();
 useHead({
     title: `${dataDetail.name} - NetTruyenVui`,
     meta: [
@@ -171,6 +180,7 @@ useHead({
         { rel: 'canonical', href: 'https://truyenvui.online' + route.fullPath },
     ]
 });
+await getChapterFirst()
 listChapter.value = (await getListChapter())?.data;
 mainStore.setLoading(false);
 
@@ -181,10 +191,10 @@ mainStore.setLoading(false);
             <div class='col-md-8'>
                 <div class="col-md-12 row">
                     <div class='col-md-4 col-sm-12' :class="{ 'max-md:tw-hidden': dataDetail.showImage }">
-                        <img v-if="dataDetail._id" :src="`${dataDetail.coverImage}`" class="tw-rounded-xl tw-w-[100%]" />
+                        <nuxt-img format="webp" :src="dataDetail.coverImage" class="tw-rounded-xl tw-w-[100%]" :alt="dataDetail.name" />
                     </div>
                     <div class='col-md-4 col-sm-12 tw-hidden max-md:tw-block'>
-                        <img v-if="dataDetail._id" :src="`${dataDetail.showImage}`" class="tw-rounded-xl tw-w-[100%]" />
+                        <nuxt-img format="webp" :src="dataDetail.showImage" class="tw-rounded-xl tw-w-[100%]" :alt="dataDetail.name" />
                     </div>
                     <div class='col-md-8'>
                         <h4 class='tw-uppercase tw-text-[20px] tw-font-medium'>{{ dataDetail.name.substring(0, 15) }}</h4>
@@ -292,7 +302,7 @@ mainStore.setLoading(false);
 
                     </div>
                     <div>
-                        <NuxtLink :to="`${$route.path}/chap-1`"
+                        <NuxtLink :to="`${$route.path}/${chapterFirst.slug}`"
                             class="tw-text-bold me-2 tw-mb-3 tw-inline-block tw-cursor-pointer tw-rounded-xl tw-bg-blue-600 dark:tw-bg-orange-700 tw-px-4 tw-py-1 tw-text-white tw-text-[14px] tw-font-light">
                             Đọc Từ Đầu
                         </NuxtLink>
@@ -330,7 +340,7 @@ mainStore.setLoading(false);
                         <div class="tw-mb-4 tw-s480:mb-0 tw-s1024:mb-4" v-for="top in listMangaTop" v-bind:key="top">
                             <NuxtLink :to="'/' + top.slug" v-if="top._id">
                                 <div class="tw-relative tw-rounded-xl tw-overflow-hidden">
-                                    <img class="tw-w-[auto]" :src="`${top.showImage}`" :alt="top.name">
+                                    <nuxt-img format="webp" :src="top.showImage" class="tw-w-[auto]" :alt="top.name" />
                                     <div
                                         class="tw-absolute tw-left-0 tw-right-0 tw-bottom-0 tw-px-[10px] tw-pt-[20px] tw-pb-[5px] tw-bg-gradient-to-b tw-from-transparent tw-to-black tw-text-white tw-dark:text-teal-500">
                                         <span class="tw-text-[12px] tw-font-extralight tw-dark:text-teal-300">{{ top.views
@@ -355,7 +365,7 @@ mainStore.setLoading(false);
                     class="tw-relative tw-snap-always tw-snap-start tw-shrink-0">
                     <NuxtLink :to="'/' + dont.slug" v-if="dont._id">
                         <div class="tw-overflow-hidden tw-w-full tw-rounded-xl">
-                            <img class="tw-w-[200px] tw-h-[300px]" :src="`${dont?.coverImage}`" :alt="dont.name">
+                            <nuxt-img format="webp" :src="dont.coverImage" class="tw-w-[200px] tw-h-[300px]" :alt="dont.name" />
                             <span
                                 class="tw-absolute tw-top-[10px] tw-left-[10px] tw-rounded-lg tw-px-2 tw-bg-red-500/80 tw-text-white tw-text-[12px] tw-font-light">{{
                                     dont.views }}
