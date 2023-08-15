@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-lg bg-body-tertiary tw-shadow tw-bg-white">
+  <nav id="header" class="navbar navbar-expand-lg bg-body-tertiary tw-shadow tw-bg-white">
     <div class="container">
       <NuxtLink
         class="navbar-brand tw-bg-clip-text tw-text-transparent tw-bg-gradient-to-r tw-from-red-500 tw-to-violet-500 tw-dark:from-red-500 tw-dark:to-teal-600 tw-text-[22px]"
