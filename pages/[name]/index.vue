@@ -83,9 +83,9 @@ async function getChapterFirst() {
 }
 
 async function getListChapter() {
-    let urlValue = `/chapter/?page=${currentPage}&index=10&sortField=number&sortOrder=desc&filterOptions={"manga":"${dataDetail._id}"}`;
+    let urlValue = `/chapter/?page=${currentPage}&index=30&sortField=number&sortOrder=desc&filterOptions={"manga":"${dataDetail._id}"}`;
     if (filterBy) {
-        urlValue = `/chapter/?page=${currentPage}&index=10&sortField=number&sortOrder=desc&filterOptions={"manga":"${dataDetail._id}"}&filter={"title": "${filterBy}"}`;
+        urlValue = `/chapter/?page=${currentPage}&index=30&sortField=number&sortOrder=desc&filterOptions={"manga":"${dataDetail._id}"}&filter={"title": "${filterBy}"}`;
     }
     const { data } = await customFetch<any>(urlValue);
     return data.value.result;
@@ -197,7 +197,7 @@ mainStore.setLoading(false);
                         <nuxt-img format="webp" :src="dataDetail.showImage" class="tw-rounded-xl tw-w-[100%]" :alt="dataDetail.name" />
                     </div>
                     <div class='col-md-8'>
-                        <h4 class='tw-uppercase tw-text-[20px] tw-font-medium'>{{ dataDetail.name.substring(0, 15) }}</h4>
+                        <h4 class='tw-uppercase tw-text-[20px] tw-font-medium'>{{ dataDetail.name }}</h4>
                         <h5 class='tw-my-3 tw-font-medium'>{{ dataDetail.title }}</h5>
                         <div class="tw-mb-2 tw-text-[14px]">
                             <label class="tw-w-[100px] tw-inline-block">Tác giả</label>

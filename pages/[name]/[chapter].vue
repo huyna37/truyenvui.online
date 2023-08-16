@@ -119,7 +119,7 @@ useHead({
         <section class="tw-pl-0 tw-mb-[1rem] tw-px-[10px] d-flex align-items-center" v-if="manga">
             <i class="fa-solid fa-house tw-mr-2 "></i>
             <span class="tw-mr-1 tw-font-bold">/</span>
-            <NuxtLink :to="'/' + manga?.slug ?? ''" class="tw-mr-1 tw-font-bold">{{ manga.name.substring(0, 20) }}</NuxtLink>
+            <NuxtLink :to="'/' + manga?.slug ?? ''" class="tw-mr-1 tw-font-bold">{{ manga.name.substring(0, 30) }}</NuxtLink>
             <span class="tw-font-bold tw-mr-1">/</span>
             <div class="tw-font-bold">
                 {{ chapter }}

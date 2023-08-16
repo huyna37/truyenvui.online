@@ -4,7 +4,7 @@ import Paginate from '@/components/shared/paginated.vue'
 const mainStore = useMainStore();
 const resultPage = ref<any>([]);
 const pageIndex = ref<any>(1);
-const limit = ref<any>(15);
+const limit = ref<any>(18);
 const totalPages = ref<any>(1);
 const router = useRouter()
 const route = useRoute();
