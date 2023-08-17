@@ -60,14 +60,14 @@ async function getContentByName() {
 function renderFiles() {
     const numVisibleFiles = 7; // Số phần tử hiển thị ban đầu
     if (!dataDetail.value) return;
-    visibleFiles = dataDetail.value.slice(0, numVisibleFiles);
+    visibleFiles.value = dataDetail.value.slice(0, numVisibleFiles);
 
     const remainingFiles = dataDetail.value.slice(numVisibleFiles);
     if (remainingFiles?.length > 0) {
         // Tạo delay 1 giây để load phần tử còn lại
         setTimeout(() => {
-            visibleFiles = visibleFiles.concat(remainingFiles);
-        }, 2000);
+            visibleFiles.value = visibleFiles.value.concat(remainingFiles);
+        }, 1500);
     }
 }
 
