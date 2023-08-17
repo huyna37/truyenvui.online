@@ -4,7 +4,7 @@
         <Header />
         <div class="container">
             <slot />
-            <a :href="!isScrolledToBottom ? '#footer' : '#header'" class="tw-fixed tw-right-[2%] tw-bottom-[10%] tw-text-[23px] tw-text-[rebeccapurple]">
+            <a :href="!isScrolledToBottom ? '#footer' : '#header'" class="max-sm:tw-right-[0%] tw-fixed tw-right-[2%] tw-bottom-[10%] tw-text-[23px] tw-text-orange-700">
                 <i class="fa-solid" :class="{ 'fa-circle-arrow-up': isScrolledToBottom, 'fa-circle-arrow-down': !isScrolledToBottom }"></i>
             </a>
         </div>

@@ -14,7 +14,19 @@ let chapterInfo = ref<any>({});
 const mainStore = useMainStore();
 
 async function getListMangas() {
-    const { data } = (await customFetch<any>('/manga/?page=1&limit=6&sortField=createdAt&sortOrder=desc'));
+    let queryList = {
+        page: 1,
+        limit: 6,
+        sortField: 'createdAt',
+        sortOrder: 'desc',
+        filterOptions: JSON.stringify({
+            "genre": { "$regex": "\\bcomedy\\b", "$options": "i" },
+            "mangaId": { "$ne": manga.mangaId }
+        })
+    };
+    const { data } = await customFetch<any>(`/manga/`, {
+        params: queryList
+    });
     listmanga = data.value.result.data;
 }
 function getCurrentChapter() {
@@ -109,14 +121,14 @@ useHead({
         },
     ],
     link: [
-        { rel: 'canonical', href: 'https://truyenvui.online' + route.fullPath },
+        { rel: 'canonical', href: route.path },
     ]
 });
 
 </script>
 <template>
     <div class='container tw-mt-[1rem]'>
-        <section class="tw-pl-0 tw-mb-[1rem] tw-px-[10px] d-flex align-items-center" v-if="manga">
+        <section class="tw-pl-0 tw-mb-[1rem] tw-px-[10px] d-flex align-items-center max-md:tw-pr-0" v-if="manga">
             <i class="fa-solid fa-house tw-mr-2 "></i>
             <span class="tw-mr-1 tw-font-bold">/</span>
             <NuxtLink :to="'/' + manga?.slug ?? ''" class="tw-mr-1 tw-font-bold">{{ manga.name.substring(0, 30) }}</NuxtLink>

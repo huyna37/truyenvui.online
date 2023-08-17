@@ -37,7 +37,8 @@ async function getListMangas() {
             sortField: 'createdAt',
             sortOrder: 'desc',
             filterOptions: JSON.stringify({
-                "genre": { "$regex": "\\bcomedy\\b", "$options": "i" }
+                "genre": { "$regex": "\\bcomedy\\b", "$options": "i" },
+                "mangaId": { "$ne": dataDetail.mangaId }
             })
         };
         const { data: list } = await customFetch<any>(`/manga/`, {
@@ -56,9 +57,9 @@ async function getListMangasTop() {
             page: 1,
             limit: 5,
             sortField: 'views',
-            sortOrder: 'asc',
+            sortOrder: 'desc',
             filterOptions: JSON.stringify({
-                "genre": { "$regex": "\\bYuri\\b", "$options": "i" }
+                "mangaId": { "$ne": dataDetail.mangaId }
             })
         };
         const { data: top } = await customFetch<any>(`/manga/`, {
@@ -122,15 +123,15 @@ await getDetail();
 await getListMangas();
 await getListMangasTop();
 useHead({
-    title: `${dataDetail.name} - NetTruyenVui`,
+    title: `${dataDetail.name} - ${route.path}`,
     meta: [
         { name: 'description', content: dataDetail.description },
         // Test on: https://developers.facebook.com/tools/debug/ or https://socialsharepreview.com/
-        { name: 'og:site_name', content: route.fullPath },
+        { name: 'og:site_name', content: route.path },
         { name: 'og:type', content: 'website' },
         {
             name: 'og:url',
-            content: route.fullPath,
+            content: route.path,
         },
         {
             name: 'og:title',
@@ -157,11 +158,11 @@ useHead({
             content: dataDetail.showImage,
         },
         // Test on: https://cards-dev.twitter.com/validator or https://socialsharepreview.com/
-        { name: 'twitter:site', content: route.fullPath },
+        { name: 'twitter:site', content: route.path },
         { name: 'twitter:card', content: 'summary_large_image' },
         {
             name: 'twitter:url',
-            content: route.fullPath,
+            content: route.path,
         },
         {
             name: 'twitter:title',
@@ -177,7 +178,7 @@ useHead({
         },
     ],
     link: [
-        { rel: 'canonical', href: 'https://truyenvui.online' + route.fullPath },
+        { rel: 'canonical', href: route.path },
     ]
 });
 await getChapterFirst()
@@ -325,6 +326,8 @@ mainStore.setLoading(false);
                             :to="'/' + dataDetail.slug">{{ dataDetail.name }}</NuxtLink>
                         <NuxtLink class="tw-bg-gray-300 dark:tw-bg-slate-700 tw-rounded-lg tw-px-2 tw-mr-1"
                             :to="'/' + dataDetail.slug" v-if="dataDetail.author">{{ dataDetail.author }}</NuxtLink>
+                        <NuxtLink class="tw-bg-gray-300 dark:tw-bg-slate-700 tw-rounded-lg tw-px-2 tw-mr-1"
+                            :to="route.path">Truyenvui.online</NuxtLink>
                     </div>
                 </div>
             </div>

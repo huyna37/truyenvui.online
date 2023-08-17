@@ -5,7 +5,6 @@ let mangas2 = ref<any>([]);
 let mangas3 = ref<any>([]);
 let mangas4 = ref<any>([]);
 let mangasSlide: any = [];
-let mangasSlide2: any = [];
 let chapterNewest = ref<any>([]);
 
 let mangaSpecial = computed(() => {
@@ -73,22 +72,20 @@ async function getMangasSlide() {
     mangasSlide = data.value.result.data;
 }
 
-async function getMangasSlide2() {
-    // Chuẩn bị truy vấn tìm kiếm
-    const query: any = {
-        page: 1,
-        limit: 12,
-        sortField: "views",
-        sortOrder: "desc",
-        filterOptions: JSON.stringify({ "genre": { "$regex": "\\bhorror\\b", "$options": "i" } })
-    };
-    const { data } = await customFetch<any>('/manga/?' + new URLSearchParams(query));
-
-    mangasSlide2 = data.value.result.data;
-}
-
 function scrollListMovie(reduce?: any) {
     let container = document.getElementById('movie-list');
+    if (!container) return;
+    if (!reduce) {
+        container.scrollLeft += 200; // Cuộn 200px bên phải
+        isMaxList.value = container.scrollLeft >= (container.scrollWidth - container.clientWidth) - 300;
+    } else {
+        container.scrollLeft = 0; // Cuộn về đầu danh sách
+        isMaxList.value = false;
+    }
+}
+
+function scrollListMovie2(reduce?: any) {
+    let container = document.getElementById('movie-list-should');
     if (!container) return;
     if (!reduce) {
         container.scrollLeft += 200; // Cuộn 200px bên phải
@@ -107,7 +104,7 @@ const mainStore = useMainStore();
 const { setLoading } = mainStore;
 
 setLoading(true);
-await Promise.all([getMangas1(), getMangas2(), getMangas3(), getMangas4(), getChapterNewest(), getMangasSlide(), getMangasSlide2()]);
+await Promise.all([getMangas1(), getMangas2(), getMangas3(), getMangas4(), getChapterNewest(), getMangasSlide()]);
 setLoading(false);
 </script>
 
@@ -186,61 +183,44 @@ setLoading(false);
             </div>
         </section>
 
-        <section class="tw-mt-[0.8rem] row">
-            <h2
-                class="tw-color-[red] tw-w-full tw-text-orange-600 tw-mb-2 tw-underline tw-underline-offset-4 tw-decoration-2 tw-uppercase">
-                <a href="/chap-moi-nhat">TRUYỆN Hay</a>
-            </h2>
-            <div id="carousel1" class="carousel slide col-lg-6 col-6" data-bs-ride="carousel">
-                <div class="carousel-indicators">
-                    <button v-for="(slide, index) in mangasSlide" type="button" data-bs-target="#carousel1"
-                        :data-bs-slide-to="index" class="active" aria-current="true" aria-label="Slide "></button>
+        <section class="tw-mt-[0.8rem]">
+            <div
+            class="tw-rounded-lg tw-mt-[1rem] max-lg:tw-mt-0 tw-bg-blue-900/80 dark:tw-bg-orange-600/80 tw-max-h-[220px]">
+            <section class="tw-relative tw-px-[10px] tw-py-[10px] s768:tw-py-[10px]">
+                <h2 class="tw-w-full tw-text-white tw-mb-2 tw-underline tw-underline-offset-4 tw-decoration-2 tw-uppercase">
+                    <a href="#truyenhaynendoc">TRUYỆN HAY NÊN ĐỌC</a>
+                </h2>
+                <div class="tw-flex movie-list tw-snap-x tw-snap-mandatory tw-overflow-y-auto tw-scrollbar-none tw-gap-[10px]"
+                    id="movie-list-should" :style="scrollContainerStyle">
+                    <div v-for="(data) in mangasSlide" v-bind:key="data"
+                        class="tw-relative tw-snap-always tw-snap-start tw-shrink-0 tw-w-[290px] tw-min-h-[190px]">
+                        <NuxtLink :to="data.slug">
+                            <div class="tw-overflow-hidden tw-w-full tw-rounded-xl">
+                                <nuxt-img format="webp" :src="data.showImage" class="tw-w-full tw-h-full"
+                                    :alt="data.name" />
+                                <span
+                                    class="tw-absolute tw-top-[10px] tw-left-[10px] tw-rounded-lg tw-px-2 tw-bg-violet-900/80 dark:tw-bg-teal-900/80 tw-text-white tw-text-[12px] tw-font-light">{{
+                                        data.views }}
+                                    <i class="fas fa-eye"></i></span>
+                            </div>
+                            <h3
+                                class="tw-text-[14px] s360:tw-text-[16px] tw-text-white tw-text-left s640:tw-text-center tw-line-clamp-1">
+                                {{ data.name }}</h3>
+                        </NuxtLink>
+                    </div>
+                    <div v-show="!isMaxList"
+                        class="tw-absolute tw-top-[40%] tw-right-[1rem] tw-text-[2rem] tw-text-[red] tw-cursor-pointer"
+                        @click="scrollListMovie2()">
+                        <i class="fa-solid fa-circle-arrow-right"></i>
+                    </div>
+                    <div v-show="isMaxList"
+                        class="tw-absolute tw-top-[40%] tw-left-[1rem] tw-text-[2rem] tw-text-[red] tw-cursor-pointer"
+                        @click="scrollListMovie2(true)">
+                        <i class="fa-solid fa-circle-arrow-left"></i>
+                    </div>
                 </div>
-                <div class="carousel-inner">
-                    <NuxtLink :to="'/' + slide.slug" class="carousel-item" v-for="(slide, index) in mangasSlide"
-                        :key="index" :class="{ 'active': index == 1 }">
-                        <nuxt-img format="webp" :src="slide.showImage"
-                            class="tw-rounded-lg tw-d-block tw-w-[100%] tw-h-[300px]" :alt="slide.name" />
-                        <div class="carousel-caption d-none d-md-block tw-text-slate-950">
-                            <h5>{{ slide.name }}</h5>
-                            <p>{{ slide.title }}</p>
-                        </div>
-                    </NuxtLink>
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carousel1" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carousel1" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-            </div>
-            <div id="carousel2" class="carousel slide col-lg-6 col-6" data-bs-ride="carousel">
-                <div class="carousel-indicators">
-                    <button v-for="(slide, index) in mangasSlide2" type="button" data-bs-target="#carousel2"
-                        :data-bs-slide-to="index" class="active" aria-current="true" aria-label="Slide "></button>
-                </div>
-                <div class="carousel-inner">
-                    <NuxtLink :to="'/' + slide.slug" class="carousel-item" v-for="(slide, index) in mangasSlide2"
-                        :key="index" :class="{ 'active': index == 1 }">
-                        <nuxt-img format="webp" :src="slide.showImage"
-                            class="tw-rounded-lg tw-d-block tw-w-[100%] tw-h-[300px]" :alt="slide.name" />
-                        <div class="carousel-caption d-none d-md-block tw-text-slate-950">
-                            <h5>{{ slide.name }}</h5>
-                            <p>{{ slide.title }}</p>
-                        </div>
-                    </NuxtLink>
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carousel2" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carousel2" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-            </div>
+            </section>
+        </div>
         </section>
 
         <section class="tw-mt-[1rem] row">
@@ -249,7 +229,7 @@ setLoading(false);
                 <a href="/chap-moi-nhat">Chapter Mới Nhất</a>
             </h2>
             <div v-for="chapterNew in chapterNewest" v-bind:key="chapterNew"
-                class="col-lg-2 col-md-3 col-sm-4 col-4 tw-relative tw-snap-always tw-snap-start tw-shrink-0">
+                class="col-lg-2 col-md-3 col-sm-4 col-6 tw-relative tw-snap-always tw-snap-start tw-shrink-0">
                 <NuxtLink :to="`${chapterNew.manga.slug}/${chapterNew.slug}` ?? '#'" v-if="chapterNew._id">
                     <div class="tw-overflow-hidden tw-w-full tw-rounded-xl">
                         <nuxt-img format="webp" :src="chapterNew.manga.coverImage" class="tw-w-[200px] tw-h-[300px]"
@@ -267,7 +247,7 @@ setLoading(false);
         </section>
 
         <div
-            class="tw-rounded-lg tw-mt-[1rem] max-lg:tw-mt-0 row tw-bg-violet-900/80 dark:tw-bg-orange-600/80 tw-max-h-[220px]">
+            class="tw-rounded-lg tw-mt-[1rem] max-lg:tw-mt-0 tw-bg-violet-900/80 dark:tw-bg-orange-600/80 tw-max-h-[220px]">
             <section class="tw-relative tw-px-[10px] tw-py-[10px] s768:tw-py-[10px]">
                 <h2 class="tw-w-full tw-text-white tw-mb-2 tw-underline tw-underline-offset-4 tw-decoration-2 tw-uppercase">
                     <a href="/truyen-co-phim">TRUYỆN CÓ THỂ PHIM</a>
@@ -311,7 +291,7 @@ setLoading(false);
                 <a href="/chap-moi-nhat">TRUYỆN HAREM</a>
             </h2>
             <NuxtLink v-for="data3 in mangas3" v-bind:key="data3" :to="data3.slug ?? '#'"
-                class='col-lg-2 col-md-3 col-4 max-lg:tw-mb-[1rem] hover:overscroll-contain hover:tw-shadow-2xl scroll-none-custom'>
+                class='col-lg-2 col-md-3 col-6 max-lg:tw-mb-[1rem] hover:overscroll-contain hover:tw-shadow-2xl scroll-none-custom'>
                 <nuxt-img format="webp" :src="data3.coverImage"
                     class="tw-h-[auto] tw-w-full tw-rounded-xl max-md:tw-h-[14rem] md:tw-h-[18rem]" :alt="data3.name" />
                 <p class='tw-text-slate-800 tw-h-[42px] tw-overflow-hidden tw-text-center tw-mt-1 tw-text-[13px]'>
@@ -328,7 +308,7 @@ setLoading(false);
             </h2>
             <template v-for="(data5) in mangas4" v-bind:key="data5">
                 <NuxtLink :to="data5.slug"
-                    class='col-lg-2 col-md-3 col-4 max-lg:tw-mb-[1rem] hover:overscroll-contain hover:tw-shadow-2xl'>
+                    class='col-lg-2 col-md-3 col-6 max-lg:tw-mb-[1rem] hover:overscroll-contain hover:tw-shadow-2xl'>
                     <nuxt-img format="webp" :src="data5.coverImage"
                         class="tw-h-[auto] tw-w-full tw-rounded-xl max-md:tw-h-[14rem] md:tw-h-[18rem]" :alt="data5.name" />
                     <p class='tw-text-slate-800 tw-h-[42px] tw-overflow-hidden tw-text-center tw-mt-1 tw-text-[13px]'>
@@ -341,6 +321,14 @@ setLoading(false);
 
 </div></template>
 
-<style>#movie-list::-webkit-scrollbar {
+<style>
+
+#movie-list::-webkit-scrollbar {
     width: 1px;
-}</style>store
+}
+
+#movie-list-should::-webkit-scrollbar {
+    width: 1px;
+}
+
+</style>

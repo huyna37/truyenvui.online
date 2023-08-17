@@ -71,7 +71,7 @@ mainStore.setLoading(false);
                 <h2
                     class="tw-w-full tw-text-orange-600 tw-mb-2 tw-uppercase tw-underline tw-underline-offset-4 tw-decoration-2 tw-mb-[1.2rem]">
                     Danh sách truyện</h2>
-                <div class="col-lg-2 col-md-3 col-sm-4 col-4" v-for="manga in resultPage" v-bind:key="manga">
+                <div class="col-lg-2 col-md-3 col-sm-4 col-6" v-for="manga in resultPage" v-bind:key="manga">
                     <NuxtLink :to="'/' + manga.slug"
                         class='col-lg-2 col-md-3 col-4 max-lg:tw-mb-[2.5rem] hover:overscroll-contain hover:tw-shadow-2xl'>
                         <nuxt-img format="webp" :src="manga.coverImage" class="tw-h-[auto] tw-w-full tw-rounded-xl" :alt="manga.name" />
