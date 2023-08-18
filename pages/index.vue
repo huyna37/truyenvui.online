@@ -65,7 +65,7 @@ async function getMangasSlide() {
         limit: 12,
         sortField: "views",
         sortOrder: "desc",
-        filterOptions: JSON.stringify({ "genre": { "$regex": "\\bharem\\b", "$options": "i" } })
+        filterOptions: JSON.stringify({ "genre": { "$regex": "\\byuri\\b", "$options": "i" } })
     };
     const { data } = await customFetch<any>('/manga/?' + new URLSearchParams(query));
 
