@@ -25,6 +25,7 @@ export default defineNuxtConfig({
         { name: 'yahooBOT', content: 'index,follow' },
         { name: 'slurp', content: 'index,follow' },
         { name: 'msnbot', content: 'index,follow' },
+        { name: 'monetag', content: 'b09f338d34fa492356d6fc35ad3657d5' },
       ],
       link: [
         { rel: 'canonical', href: 'https://Truyenvui.online/' },
