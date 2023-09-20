@@ -10,6 +10,16 @@ import { useMainStore } from '@/store';
 const mainStore = useMainStore();
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/css/index.css';
+
+const scriptSrc = 'https://inklinkor.com/tag.min.js';
+const scriptZone = 6356696;
+
+onMounted(() => {
+  const scriptElement = document.createElement('script');
+    scriptElement.src = scriptSrc;
+    scriptElement.setAttribute('data-zone', scriptZone.toString());
+    document.body.appendChild(scriptElement);
+});
 </script>
 
 <style>
