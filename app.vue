@@ -11,14 +11,13 @@ const mainStore = useMainStore();
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/css/index.css';
 
-const scriptSrc = 'https://inklinkor.com/tag.min.js';
-const scriptZone = 6356696;
-
 onMounted(() => {
-  const scriptElement = document.createElement('script');
-  scriptElement.src = scriptSrc;
-  scriptElement.setAttribute('data-zone', scriptZone.toString());
-  document.body.appendChild(scriptElement);
+  const script = document.createElement('script');
+  script.innerHTML = `(function(d,z,s){s.src='https://'+d+'/400/'+z;try{(document.body||document.documentElement).appendChild(s)}catch(e){}})('outoctillerytor.com', 6357608, document.createElement('script'))`;
+  script.type = 'text/javascript';
+  script.charset = 'utf-8';
+  document.body.appendChild(script);
+
   window.dataLayer = window.dataLayer || [];
   function gtag() { dataLayer.push(arguments); }
   gtag('js', new Date());
