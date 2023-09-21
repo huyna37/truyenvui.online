@@ -16,9 +16,14 @@ const scriptZone = 6356696;
 
 onMounted(() => {
   const scriptElement = document.createElement('script');
-    scriptElement.src = scriptSrc;
-    scriptElement.setAttribute('data-zone', scriptZone.toString());
-    document.body.appendChild(scriptElement);
+  scriptElement.src = scriptSrc;
+  scriptElement.setAttribute('data-zone', scriptZone.toString());
+  document.body.appendChild(scriptElement);
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-EXJW9XLSCZ');
 });
 </script>
 
